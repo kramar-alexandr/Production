@@ -1947,7 +1947,7 @@ end; //##ii
 window MyProdLClass:1
   wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
-  WindowBegin("Сложные производства edit",MyProdLClass,CGmlist,ProdView);
+  WindowBegin("Сложные производства",MyProdLClass,CGmlist,ProdView);
   SetWRect(64,80,570,298);
   SpawnClass(MyProdDClass);
   Sizeable(-1,-1,0,0);
