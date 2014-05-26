@@ -1973,7 +1973,7 @@ window MyProdDClass:1
   wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,h2,h3,h4,v,vm,vs,t;
-  WindowBegin("Сложное производство",MyProdDClass,CGview,-);
+  WindowBegin("Сложное производство7",MyProdDClass,CGview,-);
   SetWRect(20,80,620,333);
   Sizeable(-1,-1,0,0);
   UseView(MyProdVc);
