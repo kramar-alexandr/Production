@@ -2400,7 +2400,7 @@ LMasterWClass7_SpecMenu:;
       SpecialMenu("Завершить работу",' ',15,"ClockOutMasterWsm");
     end;
   end;
-  SpecialMenu("Открыть фильтр импорта чата",' ',16,"OpenChatFilterWsm");  
+  SpecialMenu("Открыть фильтр импорта чату",' ',16,"OpenChatFilterWsm");  
 
   EndWindow;
 end;
