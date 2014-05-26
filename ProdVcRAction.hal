@@ -1,0 +1,126 @@
+
+function LongInt IsAnyProdOperationNotCancelled(LongInt ProdNr)
+begin 
+  LongInt res;
+  record ProdOperationVc ProdOpr;
+  
+  ProdOpr.ProdNr = ProdNr;
+  ProdOpr.PRStatusFlag = 0; 
+  if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+    res = ProdOpr.SerNr;
+  end;
+  if (res<0) then begin
+    ProdOpr.ProdNr = ProdNr;
+    ProdOpr.PRStatusFlag = 1; 
+    if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+      res = ProdOpr.SerNr;
+    end;
+  end;
+  if (res<0) then begin
+    ProdOpr.ProdNr = ProdNr;
+    ProdOpr.PRStatusFlag = 2; 
+    if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+      res = ProdOpr.SerNr;
+    end;
+  end;
+  if (res<0) then begin
+    ProdOpr.ProdNr = ProdNr;
+    ProdOpr.PRStatusFlag = 3; 
+    if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+      res = ProdOpr.SerNr;
+    end;
+  end;
+  if (res<0) then begin
+    ProdOpr.ProdNr = ProdNr;
+    ProdOpr.PRStatusFlag = 5; 
+    if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+      res = ProdOpr.SerNr;
+    end;
+  end;
+  IsAnyProdOperationNotCancelled = res;
+  return;
+end;
+
+function LongInt IsAnyProdOperationNotFinished(LongInt ProdNr)
+begin 
+  LongInt res;
+  record ProdOperationVc ProdOpr;
+  
+  ProdOpr.ProdNr = ProdNr;
+  ProdOpr.PRStatusFlag = 0; 
+  if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+    res = ProdOpr.SerNr;
+  end else begin
+    ProdOpr.ProdNr = ProdNr;
+    ProdOpr.PRStatusFlag = 2; 
+    if (ReadFirstKey("ProdNrPRStatus",ProdOpr,2,true)) then begin
+      res = ProdOpr.SerNr;
+    end;
+  end;
+  IsAnyProdOperationNotFinished = res;
+  return;
+end;
+
+
+global
+updating function LongInt MyProdVcRecordCheck(var record MyProdVc Prodp,record MyProdVc Prod2p,LongInt stat,LongInt check)
+begin
+  LongInt res;
+  
+  res = 0;
+  
+  if (Prodp.SerNr<=0) then begin
+    Prodp.SerNr = NextSerNr("MyProdVc",Prodp.ProdDate,-1,false,"");
+  end;
+  
+LMyProdVcRecChk:;
+  MyProdVcRecordCheck = res;
+  RETURN;
+END;
+
+global
+updating function LongInt MyProdVcRecordSave(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+	
+	res = 0;
+	
+  MyProdVcRecordSave = res;
+  RETURN;
+END;
+
+
+global
+updating function LongInt MyProdVcRecordSaveAfter(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+	
+	res = 0;
+  
+  MyProdVcRecordSaveAfter = res;
+  RETURN;
+END;
+
+global
+updating function LongInt MyProdVcRecordUpdate(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+	
+	res = 0;
+ 
+  MyProdVcRecordUpdate = res;
+  RETURN;
+END;
+
+global
+updating function LongInt MyProdVcRecordUpdateAfter(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+  val LocOKNr;
+  Boolean ihef;
+	
+	res = 0;
+  
+  MyProdVcRecordUpdateAfter = res;
+  RETURN;
+END;

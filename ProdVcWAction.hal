@@ -1,0 +1,168 @@
+remote updating procedure InsertProdOperationRow(var record MyProdVc,integer);
+remote function boolean TestNextProdOperationExists(record MyProdVc,integer);
+external inner procedure ExtractObj(string,var Integer,var string);
+
+
+function boolean ProdDClassMotherOperationsEFAfter(integer wn,integer rownr,integer changed)
+begin
+	boolean res;
+	integer mtrw,i,pos;
+	string 20 tstr;
+	record MyProdVc MyProdr;
+	row MyProdVc MyProdrw;
+	boolean foundf;
+	string 200 prodstr;
+	
+	res = true;
+	if(changed>0)then begin
+		getwindowrecord(wn,MyProdr);
+		mtrw = matrowcnt(MyProdr);
+		matrowget(MyProdr,rownr,MyProdrw);
+		prodstr = MyProdrw.MotherOperations;
+		if(nonblank(prodstr))then begin
+			pos = 0;
+			ExtractObj(prodstr,pos,tstr);
+			While (nonblank(tstr)) begin
+				foundf = false;
+				if(nonblank(tstr))then begin
+					For(i=0;i<rownr;i=i+1) begin
+						matrowget(MyProdr,i,MyProdrw);
+						if(MyProdrw.stp==2 and MyProdrw.OperationNo==stringtoint(tstr))then begin
+							foundf = true;
+						end;
+					end;
+					if(foundf==false)then begin
+						res = false;
+						messagebox(0,"Operation not found");
+						goto LProdDClassMotherOperationsEFAfter;
+					end;
+				end;
+				ExtractObj(prodstr,pos,tstr);
+			end;
+			
+			 
+		end;
+	end;
+	
+	ProdDClassMotherOperationsEFAfter = res;
+	LProdDClassMotherOperationsEFAfter:;
+	
+return;
+end;
+
+global
+function Boolean ProdDClassAfterEditField(Integer wn,string fieldname,Integer fn,Integer rownr,Integer changed)
+BEGIN
+  Boolean res;
+
+	res = inner.ProdDClassAfterEditField(wn,fieldname,fn,rownr,changed);
+	
+  switch (fieldname) begin
+    case "MotherOperations": res = ProdDClassMotherOperationsEFAfter(wn,rownr,changed);
+  end;
+  ProdDClassAfterEditField = res;
+  RETURN;
+END;
+
+global 
+function Boolean ProdDClassInsertRowTest(Integer wn, Integer rownr)
+begin
+  Boolean res;
+  record MyProdVc MyProdr;
+
+  res = true;
+  switch (WindowState(wn)) begin
+    case Rs_normal:
+      GetWindowRecord(wn,MyProdr);
+      if (MyProdr.PRStatusFlag>=3) and (MyProdr.PRStatusFlag<=5) then begin res = false; end;
+      if (MyProdr.Disassemble!=0) then begin res = false; end;
+    case Rs_insert:
+      res = true;
+    case Rs_update:
+      GetPrevWindowRecord(wn,MyProdr);
+      if (MyProdr.PRStatusFlag>=3) and (MyProdr.PRStatusFlag<=5) then begin res = false; end;
+      if (MyProdr.Disassemble!=0) then begin res = false; end;
+    otherwise
+      res = false;
+  end;
+  
+  if(res)then begin
+  	res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
+  end;
+
+  ProdDClassInsertRowTest = res;
+  return;
+end;
+
+global 
+function Boolean ProdDClassDeleteRowTest(Integer wn,Integer rownr)
+begin
+  record MyProdVc MyProdr;
+  Boolean res;
+  record RahaxiBlock Rahaxib; 
+
+  res = true;
+  switch (WindowState(wn)) begin
+    case Rs_normal:
+      GetWindowRecord(wn,MyProdr);
+      if (MyProdr.PRStatusFlag>=3) and (MyProdr.PRStatusFlag<=5) then begin res = false; end;
+      if (MyProdr.Disassemble!=0) then begin res = false; end;
+    case Rs_insert:
+      res = true;
+    case Rs_update:
+      GetPrevWindowRecord(wn,MyProdr);
+      if (MyProdr.PRStatusFlag>=3) and (MyProdr.PRStatusFlag<=5) then begin res = false; end;
+      if (MyProdr.Disassemble!=0) then begin res = false; end;
+    otherwise
+      res = false;
+  end;
+  
+  if(res)then begin
+  	res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
+  end;
+  
+  ProdDClassDeleteRowTest = res;
+  return;
+end;
+
+global
+updating procedure AddProdOperRowDsm()
+begin
+  Integer wn,nwn;
+  Integer rownr,err,mtrw,opermin,opermax,operminrow,opermaxrow,insertrowno,insertrowcnt;
+  record MyProdVc MyProdr;
+	row MyProdVc MyProdrw;
+	integer i;
+	
+  wn = CurWindow;
+	rownr = WindowActiveRow(wn);
+	//DeselectWindow(wn,false);
+	GetWindowRecord(wn,MyProdr);
+	mtrw = matrowcnt(MyProdr);
+	if(rownr==-1 or rownr>=mtrw-1)then begin
+		insertrowcnt = mtrw;
+		opermax = 0;
+		For(i=0;i<mtrw;i=i+1) begin
+			matrowget(MyProdr,i,MyProdrw);
+			if(MyProdrw.stp==2)then begin
+				if(MyProdrw.OperationNo>opermax)then begin
+					opermax = MyProdrw.OperationNo;
+				end;
+			end;
+		end;
+		insertrowno = opermax + 1;
+		clearrow(MyProdr,MyProdrw,2);
+		MyProdrw.OperationNo = insertrowno;
+		matrowinsert(MyProdr,insertrowcnt,MyProdrw);
+	end else begin
+		
+		InsertProdOperationRow(MyProdr,rownr);
+		
+	end;
+	
+	
+	
+	putwindowrecord(wn,MyProdr);
+
+  return;
+end;

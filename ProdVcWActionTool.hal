@@ -1,0 +1,51 @@
+global updating procedure InsertProdOperationRow(var record MyProdVc MyProdr,integer rownr)
+begin
+	row MyProdVc MyProdrw;
+	integer i,mtrw;
+	integer minMyProdrow,minprodnr,maxMyProdrow,maxprodnr;
+	boolean testf;
+	
+	mtrw = matrowcnt(MyProdr);
+	
+	For(i=0;i<=rownr;i=i+1) begin
+		matrowget(MyProdr,i,MyProdrw);
+	  if(MyProdrw.stp==2)then begin
+	  	minMyProdrow = i;
+	  	minprodnr = MyProdrw.OperationNo;
+	  end;
+	end; 
+	
+	For(i=mtrw-1;i>=rownr;i=i-1) begin
+		matrowget(MyProdr,i,MyProdrw);
+	  if(MyProdrw.stp==2)then begin
+	  	maxMyProdrow = i;
+	  	maxprodnr = MyProdrw.OperationNo;
+	  end;
+	end;
+	
+	//testf = TestFolowingProdOperations;
+	clearrow(MyProdr,MyProdrw,2);
+	MyProdrw.OperationNo = maxprodnr;
+	matrowinsert(MyProdr,maxMyProdrow,MyProdrw);
+	mtrw = matrowcnt(MyProdr);
+	
+	For(i=maxMyProdrow+1;i<mtrw;i=i+1) begin
+	  matrowget(MyProdr,i,MyProdrw);
+	  	MyProdrw.OperationNo = MyProdrw.OperationNo + 1;
+	  matrowput(MyProdr,i,MyProdrw);
+	end; 
+	
+	
+return;
+end;
+
+
+global function boolean TestNextProdOperationExists(record MyProdVc MyProdr,integer rownr)
+begin
+ boolean res;
+	
+	res = true;
+	
+	TestNextProdOperationExists = res;
+return;
+end;

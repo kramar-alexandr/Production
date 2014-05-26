@@ -1,0 +1,10 @@
+
+event startup
+begin
+
+	SetLangMode(LangRussian,"RUS",0);
+ 
+  Register("Сложное производство","Сложное производство",MyProdVc,modProd);
+    
+	return;
+end;
