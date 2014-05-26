@@ -159,10 +159,35 @@ begin
 		InsertProdOperationRow(MyProdr,rownr);
 		
 	end;
-	
-	
-	
 	putwindowrecord(wn,MyProdr);
 
   return;
 end;
+
+global
+updating procedure AddProdInstructionRowDsm()
+begin
+  Integer wn,nwn;
+  Integer rownr,err,mtrw,opermin,opermax,operminrow,opermaxrow,insertrowno,insertrowcnt;
+  record MyProdVc MyProdr;
+	row MyProdVc MyProdrw;
+	integer i;
+	
+  wn = CurWindow;
+	rownr = WindowActiveRow(wn);
+	//DeselectWindow(wn,false);
+	GetWindowRecord(wn,MyProdr);
+	mtrw = matrowcnt(MyProdr);
+	if(rownr==-1 or rownr>=mtrw-1)then begin
+		insertrowcnt = mtrw;
+		clearrow(MyProdr,MyProdrw,3);
+		matrowinsert(MyProdr,insertrowcnt,MyProdrw);
+	end else begin
+		clearrow(MyProdr,MyProdrw,3);
+		matrowinsert(MyProdr,rownr,MyProdrw);
+	end;
+	putwindowrecord(wn,MyProdr);
+
+  return;
+end;
+

@@ -102,6 +102,7 @@ begin
   ArrayField(OperationNo,M4Int,0,0);// Edit ************************** Monday, 5 May 2014 15:10:26
   ArrayField(MotherOperations,M4Str,200,0);// Edit ************************** Monday, 5 May 2014 15:10:26
   ArrayField(Machine,M4Code,20,AT2Vc);// Edit ************************** Monday, 5 May 2014 15:10:26
+  ArrayField(ProdComment,M4Str,200,0);// Edit ************************** Monday, 5 May 2014 15:10:26
   EndArray;
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);

@@ -2008,6 +2008,7 @@ begin
     //EditField(h2,v,80,"Маршрут",Normal,Routing,false,RoutingSClass);// Edit ************************** Thursday, 15 May 2014 13:59:21
   end;
   HalPushButton(h,v+=20,h+100,v+16,"AddProdOperRowDsm","+ операция");// Edit ************************** Thursday, 15 May 2014 14:38:04
+  HalPushButton(h+100,v,h+200,v+16,"AddProdInstructionRowDsm","+ инструкция");// Edit ************************** Thursday, 15 May 2014 14:38:04
 //  ButtonFrame(h3,v+=36,80,3,"Inspection");
 //  RadioButton(h3,v,0,0,"Not done",InspectStatus);
 //  RadioButton(h3,v+=16,1,0,"OK",InspectStatus);
@@ -2044,6 +2045,8 @@ begin
   MatColTL(t,280,"",0,M4Str,Normal,0,MotherOperations,false,0);
   MatText(t=2,330,"Комм.",false);
   MatColTL(t,370,"",0,M4Str,Normal,0,Comment,false,0);
+  MatText(t=3,34,"Инструкции:",false);//Mother Operation **********
+  MatColTL(t,120,"",0,M4Str,Normal,0,Comment,false,0);
   Flip(2);
   MatCol(t=1,-375,"Объекты",0,Objects,false,ObjSClass);
   MatCol(t,-310,"Затр.",0,InQty,true,0);
@@ -2400,7 +2403,7 @@ LMasterWClass7_SpecMenu:;
       SpecialMenu("Завершить работу",' ',15,"ClockOutMasterWsm");
     end;
   end;
-  SpecialMenu("Открыть фильтр импорта чату",' ',16,"OpenChatFilterWsm");  
+  SpecialMenu("Открыть фильтр импорта чата",' ',16,"OpenChatFilterWsm");  
 
   EndWindow;
 end;
