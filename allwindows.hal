@@ -2045,14 +2045,18 @@ begin
   MatColTL(t,280,"",0,M4Str,Normal,0,MotherOperations,false,0);
   MatText(t=2,330,"Комм.",false);
   MatColTL(t,370,"",0,M4Str,Normal,0,Comment,false,0);
-  MatText(t=3,34,"Инструкции:",false);//Mother Operation **********
-  MatColTL(t,120,"",0,M4Str,Normal,0,Comment,false,0);
+  MatText(t=3,34,"Инструкции:",false);//Operation **********       Comment
+  MatCol(t,120,"",0,Comment,false,0);
   Flip(2);
   MatCol(t=1,-375,"Объекты",0,Objects,false,ObjSClass);
   MatCol(t,-310,"Затр.",0,InQty,true,0);
   MatCol(t,-260,"Выпуск",0,OutQty,true,0);
   MatCol(t,-210,"Действит.",0,ActualQty,true,0);
   MatCol(t,-160,"Материал",0,Material,false,MaterialSClass);
+  MatText(t=2,150,"Группа машин:",false);//Machine group **********             Operation
+  MatCol(t,240,"",0,MachineGroup,false,MachineGroupsSClass);
+  MatText(t,300,"Машина:",false);//Machine group **********
+  MatCol(t,380,"",0,Machine,false,AT2UnitSClass);
   Flip(3);
   MatCol(t=1,-270,"Затр.",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);
