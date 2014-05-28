@@ -2,8 +2,9 @@ remote updating procedure InsertProdOperationRow(var record MyProdVc,integer);
 remote function boolean TestNextProdOperationExists(record MyProdVc,integer);
 external inner procedure ExtractObj(string,var Integer,var string);
 
+SetLangMode(LangRussian,"RUS",0);
 
-function boolean ProdDClassMotherOperationsEFAfter(integer wn,integer rownr,integer changed)
+function boolean MyProdDClassMotherOperationsEFAfter(integer wn,integer rownr,integer changed)
 begin
 	boolean res;
 	integer mtrw,i,pos;
@@ -44,28 +45,87 @@ begin
 		end;
 	end;
 	
-	ProdDClassMotherOperationsEFAfter = res;
+	MyProdDClassMotherOperationsEFAfter = res;
 	LProdDClassMotherOperationsEFAfter:;
 	
 return;
 end;
 
+function boolean MyProdDClassItemEFAfter(integer wn,integer rownr,integer changed)
+begin
+  record MyProdVc MyProdr;
+  record INVc INr;
+  row MyProdVc MyProdrw;	
+  Integer i,rwcnt;
+  Boolean res;
+
+  res = true;
+  if (changed!=0) then begin
+    GetWindowRecord(wn,MyProdr);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    if (rownr==0) then begin
+      MessageBox(0,"Дабавте операцию");
+      res = false;     
+    end else begin
+      INr.Code=MyProdrw.Item;
+      if (ReadFirstMain(INr,1,true)) then begin
+        MyProdrw.Comment=INr.Name;
+        MatRowPut(MyProdr,rownr,MyProdrw);
+        res = true;
+      end else begin
+        MessageBox(0,"Код товара не зарегистрирован");
+        res = false;     
+      end;
+      PutWindowRecord(wn,MyProdr);
+    end;
+  end;
+  MyProdDClassItemEFAfter = res;
+  return;
+end;
+
+function boolean MyProdDClassOutQtyEFAfter(integer wn,integer rownr,integer changed)
+begin
+  record MyProdVc MyProdr;
+  record INVc INr;
+  row MyProdVc MyProdrw;	
+  Integer i,rwcnt;
+  Boolean res;
+
+  res = true;
+  if (changed!=0) then begin
+    GetWindowRecord(wn,MyProdr);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    INr.Code=MyProdrw.Item;
+    if (ReadFirstMain(INr,1,true)) then begin
+      if (INr.SerNrf!=0) then begin
+        MessageBox(0,"Введите серийный номер товара");
+        res = false;     
+      end;
+    end;
+  end;
+  MyProdDClassOutQtyEFAfter = res;
+  return;
+end;
+
 global
-function Boolean ProdDClassAfterEditField(Integer wn,string fieldname,Integer fn,Integer rownr,Integer changed)
+function Boolean MyProdDClassAfterEditField(Integer wn,string fieldname,Integer fn,Integer rownr,Integer changed)
 BEGIN
   Boolean res;
 
-	res = inner.ProdDClassAfterEditField(wn,fieldname,fn,rownr,changed);
+	res = inner.MyProdDClassAfterEditField(wn,fieldname,fn,rownr,changed);
 	
   switch (fieldname) begin
-    case "MotherOperations": res = ProdDClassMotherOperationsEFAfter(wn,rownr,changed);
+    case "MotherOperations": res = MyProdDClassMotherOperationsEFAfter(wn,rownr,changed);
+    case "Item":  res = MyProdDClassItemEFAfter(wn,rownr,changed);
+    case "OutQty":  res = MyProdDClassOutQtyEFAfter(wn,rownr,changed);
+//    case "InQty":  res = MyProdDClassInOutQtyEFAfter(wn,rownr,changed);
   end;
-  ProdDClassAfterEditField = res;
+  MyProdDClassAfterEditField = res;
   RETURN;
 END;
 
 global 
-function Boolean ProdDClassInsertRowTest(Integer wn, Integer rownr)
+function Boolean MyProdDClassInsertRowTest(Integer wn, Integer rownr)
 begin
   Boolean res;
   record MyProdVc MyProdr;
@@ -90,12 +150,12 @@ begin
   	res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
   end;
 
-  ProdDClassInsertRowTest = res;
+  MyProdDClassInsertRowTest = res;
   return;
 end;
 
 global 
-function Boolean ProdDClassDeleteRowTest(Integer wn,Integer rownr)
+function Boolean MyProdDClassDeleteRowTest(Integer wn,Integer rownr)
 begin
   record MyProdVc MyProdr;
   Boolean res;
@@ -121,7 +181,53 @@ begin
   	res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
   end;
   
-  ProdDClassDeleteRowTest = res;
+  MyProdDClassDeleteRowTest = res;
+  return;
+end;
+
+global
+updating procedure GenSerialNrMyProd()
+begin
+  Integer wn, rownr, i;
+  record MyProdVc MyProdr;
+  row MyProdVc MyProdrw, MyProd2rw;
+  
+  wn = CurWindow();
+  if (WindowState(wn)!=Rs_insert) then
+  begin
+    rownr = WindowActiveRow(wn);
+    GetWindowRecord(wn,MyProdr);
+    DeselectWindow(wn,false);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    if NonBlank(MyProdrw.InQty) then begin
+      for (i=0;i<rownr-1;i=i+1) begin
+        MatRowGet(MyProdr,i,MyProd2rw);
+        if (MyProd2rw.Item==MyProdrw.Item) then begin
+          MyProdrw.SerialNr = MyProd2rw.SerialNr;
+        end;
+      end;
+      if Blank(MyProdrw.SerialNr) then begin
+        for(i=0;i<rownr;i=i+1) begin
+          matrowget(MyProdr,i,MyProd2rw);
+          if(MyProd2rw.stp==2)then begin
+            MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+          end;
+        end;
+      end;
+    end else begin
+      for(i=0;i<rownr;i=i+1) begin
+        matrowget(MyProdr,i,MyProd2rw);
+        if(MyProd2rw.stp==2)then begin
+          MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+        end;
+      end;
+    end;
+    MatRowPut(MyProdr,rownr,MyProdrw);
+    PutWindowRecord(wn,MyProdr);
+  end else begin
+    MessageBox(0, "Сохраните запись");
+  end;
+
   return;
 end;
 
@@ -140,7 +246,10 @@ begin
 	GetWindowRecord(wn,MyProdr);
 	mtrw = matrowcnt(MyProdr);
 	if(rownr==-1 or rownr>=mtrw-1)then begin
-		insertrowcnt = mtrw;
+		insertrowcnt = mtrw - 1;
+		if (rownr==-1) then begin
+		  insertrowcnt = mtrw;
+		end;
 		opermax = 0;
 		For(i=0;i<mtrw;i=i+1) begin
 			matrowget(MyProdr,i,MyProdrw);

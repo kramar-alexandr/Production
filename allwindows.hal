@@ -2092,24 +2092,26 @@ begin
   //EditField(h2,v,60,"Время прерыв.",Normal,BreakTime,false,0);// Edit ************************** Thursday, 15 May 2014 14:01:54
   //EditField(h2+200,v,70,"Язык",Normal,LangCode,true,LangSCLass);// Edit ************************** Thursday, 15 May 2014 14:01:55
 //  EditField(h2+200,v,80,"AcumCostPrice",ViewOnly,AcumCostPrice,false,0);
-  SpecialMenu("Пересчитать стоимость",' ',0,"ProdFillFIFODsm");
-  SpecialMenu("Сгенерировать сер. номера выпускаемых товаров",' ',1,"GenSerialNosProdDsm");
-  SpecialMenu("Разобрать",' ',2,"CreateDisProdFromProd");
-  SpecialMenu("Статус товара",'I',3,"ItemStatusProdDsm");
-  SpecialMenu("Поиск товара",'f',1,"ItemSearchDsm");
-  SpecialMenu("Статус производства",'r',4,"ProdStatusFromProdDsm");
-  SpecialMenu("Открыть спецификацию партии",' ',5,"OpenBatchProdDsm");
-  SpecialMenu("Открыть запись операции",'t',5,"OpenTRFromProd");
-  if (StandardHansa==false) then begin
-    SpecialMenu("Нормативное списание",' ',6,"ProdBackflushFromProdDsm");
-  end;
-  SpecialMenu("Создать деятельность",'c',7,"CreateActFromProd");
-  SpecialMenu("Создать перемещение товаров",' ',8,"StockMovFromPRDsm");
-  if (StandardHansa==false) then begin
-    SpecialMenu("Создать операции производств",' ',9,"ProdOperFromPRDsm");
-    SpecialMenu("Контроль качества",'u',8,"QualConFromProdDsm");
-  end;
-  SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
+  
+  //SpecialMenu("Пересчитать стоимость",' ',0,"ProdFillFIFODsm");
+  //SpecialMenu("Сгенерировать сер. номера выпускаемых товаров",' ',1,"GenSerialNosProdDsm");
+  //SpecialMenu("Разобрать",' ',2,"CreateDisProdFromProd");
+  //SpecialMenu("Статус товара",'I',3,"ItemStatusProdDsm");
+  //SpecialMenu("Поиск товара",'f',1,"ItemSearchDsm");
+  //SpecialMenu("Статус производства",'r',4,"ProdStatusFromProdDsm");
+  //SpecialMenu("Открыть спецификацию партии",' ',5,"OpenBatchProdDsm");
+  //SpecialMenu("Открыть запись операции",'t',5,"OpenTRFromProd");
+  //if (StandardHansa==false) then begin
+  //  SpecialMenu("Нормативное списание",' ',6,"ProdBackflushFromProdDsm");
+  //end;
+  //SpecialMenu("Создать деятельность",'c',7,"CreateActFromProd");
+  //SpecialMenu("Создать перемещение товаров",' ',8,"StockMovFromPRDsm");
+  //if (StandardHansa==false) then begin
+  //  SpecialMenu("Создать операции производств",' ',9,"ProdOperFromPRDsm");
+  //  SpecialMenu("Контроль качества",'u',8,"QualConFromProdDsm");
+  //end;
+  //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
+  SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
   EndWindow;
 end;
 
