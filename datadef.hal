@@ -162,6 +162,122 @@ begin
   KeySegment(ProdClass);
   KeySegment(SerNr);
   EndRecord;
+  
+  RecordBegin(ProdOperationVc,-,"");
+  RecordField(SerNr,M4Long,0,ProdOperationVc);
+  SerialNoBlock(ProdOperSerBlock);          
+  RecordField(ProdOrdNr,M4Long,0,ProdOrderVc);
+  RecordField(Sequence,M4Long,0,0);
+  RecordField(Comment,M4Str,60,0);
+  RecordField(PlanDurTime,M4Time,0,0);
+  RecordField(PlanDurDays,M4Long,0,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(DoneFlag,M4Mark,0,0);
+  RecordField(ProdDate,M4Date,0,0);
+  FieldIsTransDate(ProdDate);
+  RecordField(Location,M4Code,10,LocationVc);
+  FieldIsLocation(Location);
+  RecordField(StartDate,M4Date,0,0);
+  RecordField(EndDate,M4Date,0,0);
+  RecordField(StartTime,M4Time,0,0);
+  RecordField(EndTime,M4Time,0,0);
+  RecordField(PRStatusFlag,M4Int,0,0);
+  RecordField(FinnishedFlag,M4Int,0,0);
+  RecordField(StdOperation,M4Code,20,StdOperationVc);
+  RecordField(LangCode,M4Code,5,0);
+  RecordField(Qty,M4UVal,0,0);
+  RecordField(ActualQty,M45Val,0,0);
+  RecordField(LocOKNr,M4Qty,0,0);
+  RecordField(StandProblem,M4Code,20,0);//not used
+  RecordField(MachineGroup,M4Code,20,0);
+  RecordField(DisplayGroup,M4Code,5,0);
+  RecordField(Machine,M4Str,30,AT2UnitVc);
+  RecordField(Person,M4Code,10,UserVc);
+  RecordField(ProdNr,M4Long,0,ProdVc);
+  RecordField(RowsHoldActualQty,M4Int,0,0);
+  RecordField(Math2,M4TextField,0,0);
+  RecordField(BatchTime,M4Int,0,0);
+  RecordField(SubSequence,M4Long,0,0);
+  RecordField(SetupTime,M4Time,0,0);
+  RecordField(QueueTime,M4Time,0,0);
+  RecordField(MoveTime,M4Time,0,0);
+  RecordField(RunTime,M4Duration,0,0);
+  RecordField(MyProdNr,M4Long,0,0);//Edit***************************Sasha2,10:13 29.05.2014
+  ArrayBegin(Math,-,1);
+  ArrayField(Item,M4Code,20,INVc);
+  ArrayField(Comment,M4Str,60,0);
+  ArrayField(Material,M4Str,60,0);
+  ArrayField(InQty,M45Val,0,0);
+  ArrayField(OutQty,M45Val,0,0);
+  ArrayField(ActualInQty,M45Val,0,0);
+  ArrayField(ActualOutQty,M45Val,0,0);
+  ArrayField(ItemCost,M45Val,0,0);
+  ArrayField(SerialNr,M4Str,30,0);
+  ArrayField(BestBefore,M4Date,0,0);
+  ArrayField(RelVal,M4UVal,0,0);
+  ArrayField(FIFORowVal,M45Val,0,0);
+  ArrayField(Coefficient,M45Val,0,0);
+  ArrayField(Objects,M4UStr,60,ObjVc);
+  ArrayField(PosCode,M4Code,20,0);
+  ArrayField(Discarded,M4Set,325,0);
+  ArrayField(StandProblem,M4Code,20,0);
+  EndArray;
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(ProdOrdNr);
+  KeySegment(ProdOrdNr);
+  KeySegment(SerNr);
+  KeyBegin(Sequence);
+  KeySegment(Sequence);
+  KeySegment(ProdNr);
+  KeySegment(PRStatusFlag);
+  KeySegment(SerNr);
+  KeyBegin(StartDate);
+  KeySegment(StartDate);
+  KeySegment(StartTime);
+  KeySegment(SerNr);
+  KeyBegin(ProdNrPRStatus);
+  KeySegment(ProdNr);
+  KeySegment(PRStatusFlag);
+  KeySegment(SerNr);
+
+  KeyBegin(SubSequence);
+  KeySegment(Sequence);
+  KeySegment(SubSequence);
+  KeySegment(ProdNr);
+  KeySegment(PRStatusFlag);
+  KeySegment(SerNr);
+
+  KeyBegin(ProdNrSeq);
+  KeySegment(ProdNr);
+  KeySegment(Sequence);
+  KeySegment(SubSequence);
+  KeySegment(SerNr);
+
+  KeyBegin(Machine);
+  KeySegment(Machine);
+  KeySegment(PRStatusFlag);
+  KeySegment(StartDate);
+  KeySegment(SerNr);
+
+  KeyBegin(PRStatusFlag);
+  KeySegment(PRStatusFlag);
+  KeySegment(SerNr);
+
+  KeyBegin(ProdNr);
+  KeySegment(ProdNr);
+  KeySegment(SerNr);
+  
+  KeyBegin(ProdDate);
+  KeySegment(ProdDate);
+  KeySegment(EndTime);
+  KeySegment(SerNr);
+  
+  KeyBegin(MyProdNr); //Edit***************************Sasha2,10:14 29.05.2014
+  KeySegment(MyProdNr);
+  KeySegment(SerNr);
+
+  EndRecord;
 	
 return;
 end;
