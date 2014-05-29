@@ -193,8 +193,7 @@ begin
   row MyProdVc MyProdrw, MyProd2rw;
   
   wn = CurWindow();
-  if (WindowState(wn)!=Rs_insert) then
-  begin
+  if (WindowState(wn)!=Rs_insert) then begin
     rownr = WindowActiveRow(wn);
     GetWindowRecord(wn,MyProdr);
     DeselectWindow(wn,false);
@@ -207,12 +206,7 @@ begin
         end;
       end;
       if Blank(MyProdrw.SerialNr) then begin
-        for(i=0;i<rownr;i=i+1) begin
-          matrowget(MyProdr,i,MyProd2rw);
-          if(MyProd2rw.stp==2)then begin
-            MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
-          end;
-        end;
+        MessageBox(0, "ќтот товар не был изготовлен в данном производстве");
       end;
     end else begin
       for(i=0;i<rownr;i=i+1) begin
@@ -247,9 +241,10 @@ begin
 	mtrw = matrowcnt(MyProdr);
 	if(rownr==-1 or rownr>=mtrw-1)then begin
 		insertrowcnt = mtrw - 1;
-		if (rownr==-1) then begin
+		if ((rownr==-1) or (mtrw<=1)) then begin
 		  insertrowcnt = mtrw;
 		end;
+
 		opermax = 0;
 		For(i=0;i<mtrw;i=i+1) begin
 			matrowget(MyProdr,i,MyProdrw);
