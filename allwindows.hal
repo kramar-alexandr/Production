@@ -2444,7 +2444,7 @@ begin
   EditField(h,v+=vs,50,"Послед-ность",ViewOnly,Sequence,false,0);
   EditField(h+70,v,30,"",ViewOnly,SubSequence,false,0);
   EditField(h+260,v,50,"№ сложного прoиз.",ViewOnly,MyProdNr,false,0);
-  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MySequence,false,0);
+  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MyProdOperRow,false,0);
 //  CheckBox(h2,v,0,"Time per Batch",BatchTime); no code
   ButtonFrame(h3,v=40,150,5,"Статус");
   RadioButton(h3,v,kPRStatusCreated,0,"Создано",PRStatusFlag);

@@ -38,12 +38,12 @@ begin
   	case 2:
   		RecordNew(ProdOperationr);
   		ProdOperationr.MyProdNr = MyProdr.SerNr;
-  		ProdOperationr.MySequence = MyProdrw.OperationNo;	
+  		ProdOperationr.MyProdOperRow = MyProdrw.OperationNo;	
   		if (ReadFirstKey("MyProdNr",ProdOperationr,2,true)) then begin
   			storeUnit = 0; 			
     	end else begin 
     		ProdOperationr.MyProdNr = MyProdr.SerNr;
-  			ProdOperationr.MySequence = MyProdrw.OperationNo;
+  			ProdOperationr.MyProdOperRow = MyProdrw.OperationNo;
     	  	ProdOperationr.SerNr = NextSerNr("ProdOperationVc",ProdOperationr.StartDate,-1,false,"");
 	  		ProdOperationr.Comment = MyProdrw.ProdComment;
 	  		if (RecordStore(ProdOperationr,true)) then begin
@@ -54,9 +54,9 @@ begin
   		end;
   	case 3:
   		if (NonBlank(MyProdrw.Comment) and storeUnit == 1) then begin
-  			ProdOperationr.Math2 = MyProdrw.Comment;
+  			/*ProdOperationr.Math2 = MyProdrw.Comment;
   			MessageBox(0,ProdOperationr.Math2);
-  			RecordStore(ProdOperationr,true);
+  			RecordStore(ProdOperationr,true);*/
   		end;
   	end;
     

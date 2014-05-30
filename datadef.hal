@@ -203,7 +203,7 @@ begin
   RecordField(MoveTime,M4Time,0,0);
   RecordField(RunTime,M4Duration,0,0);
   RecordField(MyProdNr,M4Long,0,0);//Edit***************************Sasha2,10:13 29.05.2014
-  RecordField(MySequence,M4Long,0,0);//Edit***************************Sasha2,13:22 30.05.2014
+  RecordField(MyProdOperRow,M4Long,0,0);//Edit***************************Sasha2,13:22 30.05.2014
   ArrayBegin(Math,-,1);
   ArrayField(Item,M4Code,20,INVc);
   ArrayField(Comment,M4Str,60,0);
@@ -276,7 +276,7 @@ begin
   
   KeyBegin(MyProdNr); //Edit***************************Sasha2,10:14 29.05.2014
   KeySegment(MyProdNr);//Edit***************************Sasha2,10:14 29.05.2014
-  KeySegment(MySequence); //Edit***************************Sasha2,15:17 29.05.2014
+  KeySegment(MyProdOperRow); //Edit***************************Sasha2,15:17 29.05.2014
   KeySegment(SerNr);//Edit***************************Sasha2,10:14 29.05.2014
 
   EndRecord;
