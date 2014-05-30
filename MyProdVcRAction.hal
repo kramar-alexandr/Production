@@ -1,8 +1,15 @@
 global
+<<<<<<< HEAD
+updating procedure GenerateOperationSsm()
+begin
+
+  Integer wn, rownr, i, operprodcnt, rwcnt, rwcnt2, storeUnit;
+=======
 updating procedure GenerateOperationSsm() // функция разложения по операциям
 begin
 
   Integer wn, i, rwcnt, rwcnt2, storeUnit, curcomp;
+>>>>>>> FETCH_HEAD
   record MyProdVc MyProdr;
   record ProdOperationVc ProdOperationr;
   row MyProdVc MyProdrw, MyProd2rw;
@@ -10,7 +17,10 @@ begin
   string 255 errStr;
   
   storeUnit = 0;
+<<<<<<< HEAD
+=======
   curcomp = CurrentCompany;
+>>>>>>> FETCH_HEAD
   wn = CurWindow();
   GetWindowRecord(wn,MyProdr);
   rwcnt = matrowcnt(MyProdr);
@@ -35,27 +45,49 @@ begin
 	  		end;
 	  		rwcnt2 = rwcnt2 + 1;
 	  	end;
+<<<<<<< HEAD
+  		//MessageBox(0,MyProdrw.stp);
+  	case 2:
+  		RecordNew(ProdOperationr);
+  		ProdOperationr.MyProdNr = MyProdr.SerNr;
+  		ProdOperationr.MySequence = MyProdrw.OperationNo;	
+=======
   	case 2:
   		RecordNew(ProdOperationr);
   		ProdOperationr.MyProdNr = MyProdr.SerNr;
   		ProdOperationr.MyProdOperRow = MyProdrw.OperationNo;	
+>>>>>>> FETCH_HEAD
   		if (ReadFirstKey("MyProdNr",ProdOperationr,2,true)) then begin
   			storeUnit = 0; 			
     	end else begin 
     		ProdOperationr.MyProdNr = MyProdr.SerNr;
+<<<<<<< HEAD
+  			ProdOperationr.MySequence = MyProdrw.OperationNo;
+=======
   			ProdOperationr.MyProdOperRow = MyProdrw.OperationNo;
+>>>>>>> FETCH_HEAD
     	  	ProdOperationr.SerNr = NextSerNr("ProdOperationVc",ProdOperationr.StartDate,-1,false,"");
 	  		ProdOperationr.Comment = MyProdrw.ProdComment;
 	  		if (RecordStore(ProdOperationr,true)) then begin
 	  			storeUnit = 1;
+<<<<<<< HEAD
+	  			rwcnt2 = matrowcnt(ProdOperationr);
+	  			//MessageBox(0,ProdOperationr.SerNr & "No");
+=======
 	  			CreateRecordLink(ProdOperationr,curcomp,MyProdr,curcomp);
 	  			CreateRecordLink(MyProdr,curcomp,ProdOperationr,curcomp);
 	  			rwcnt2 = matrowcnt(ProdOperationr);
+>>>>>>> FETCH_HEAD
 	    	end;
   		end;
   	case 3:
   		if (NonBlank(MyProdrw.Comment) and storeUnit == 1) then begin
+<<<<<<< HEAD
+  			ProdOperationr.Math2 = MyProdrw.Comment;
+  			MessageBox(0,ProdOperationr.Math2);
+=======
   			AddToText(MyProdrw.Comment & Chr(32),ProdOperationr);
+>>>>>>> FETCH_HEAD
   			RecordStore(ProdOperationr,true);
   		end;
   	end;
@@ -66,6 +98,45 @@ begin
   	errStr = "Проблема с товаром:" & Chr(13) & Chr(13) & errStr;
   	MessageBox(0,errStr);
   end;
+<<<<<<< HEAD
+  
+  /*wn = CurWindow();
+  if (WindowState(wn)!=Rs_insert) then
+  begin
+    rownr = WindowActiveRow(wn);
+    GetWindowRecord(wn,MyProdr);
+    DeselectWindow(wn,false);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    if NonBlank(MyProdrw.InQty) then begin
+      for (i=0;i<rownr-1;i=i+1) begin
+        MatRowGet(MyProdr,i,MyProd2rw);
+        if (MyProd2rw.Item==MyProdrw.Item) then begin
+          MyProdrw.SerialNr = MyProd2rw.SerialNr;
+        end;
+      end;
+      if Blank(MyProdrw.SerialNr) then begin
+        for(i=0;i<rownr;i=i+1) begin
+          matrowget(MyProdr,i,MyProd2rw);
+          if(MyProd2rw.stp==2)then begin
+            MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+          end;
+        end;
+      end;
+    end else begin
+      for(i=0;i<rownr;i=i+1) begin
+        matrowget(MyProdr,i,MyProd2rw);
+        if(MyProd2rw.stp==2)then begin
+          MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+        end;
+      end;
+    end;
+    MatRowPut(MyProdr,rownr,MyProdrw);
+    PutWindowRecord(wn,MyProdr);
+  end else begin
+    MessageBox(0, "Сохраните запись");
+  end;*/
+=======
+>>>>>>> FETCH_HEAD
 
   return;
 end;

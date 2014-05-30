@@ -2,39 +2,30 @@ global updating procedure InsertProdOperationRow(var record MyProdVc MyProdr,int
 begin
 	row MyProdVc MyProdrw;
 	integer i,mtrw;
-	integer minMyProdrow,minprodnr,maxMyProdrow,maxprodnr;
-	boolean testf;
+	integer prevprodnr;
 	
 	mtrw = matrowcnt(MyProdr);
-	
-	For(i=0;i<=rownr;i=i+1) begin
+
+	for(i=0;i<rownr;i=i+1) begin
 		matrowget(MyProdr,i,MyProdrw);
 	  if(MyProdrw.stp==2)then begin
-	  	minMyProdrow = i;
-	  	minprodnr = MyProdrw.OperationNo;
-	  end;
-	end; 
-	
-	For(i=mtrw-1;i>=rownr;i=i-1) begin
-		matrowget(MyProdr,i,MyProdrw);
-	  if(MyProdrw.stp==2)then begin
-	  	maxMyProdrow = i;
-	  	maxprodnr = MyProdrw.OperationNo;
+	  	prevprodnr = MyProdrw.OperationNo;
 	  end;
 	end;
-	
-	//testf = TestFolowingProdOperations;
+prevprodnr = prevprodnr + 1;
 	clearrow(MyProdr,MyProdrw,2);
-	MyProdrw.OperationNo = maxprodnr;
-	matrowinsert(MyProdr,maxMyProdrow-1,MyProdrw);
-	mtrw = matrowcnt(MyProdr);
-	
-	For(i=maxMyProdrow+1;i<mtrw;i=i+1) begin
+	MyProdrw.OperationNo = prevprodnr;
+  matrowinsert(MyProdr,rownr,MyProdrw);
+  For(i=rownr+1;i<mtrw+1;i=i+1) begin
 	  matrowget(MyProdr,i,MyProdrw);
-	  	MyProdrw.OperationNo = MyProdrw.OperationNo + 1;
+	  if(MyProdrw.stp==2)then begin
+	    if (MyProdrw.OperationNo==prevprodnr) then begin
+        MyProdrw.OperationNo = MyProdrw.OperationNo + 1;
+        prevprodnr = prevprodnr + 1;
+      end;
+	  end;
 	  matrowput(MyProdr,i,MyProdrw);
 	end; 
-	
 	
 return;
 end;
