@@ -159,8 +159,7 @@ function Boolean MyProdDClassDeleteRowTest(Integer wn,Integer rownr)
 begin
   record MyProdVc MyProdr;
   Boolean res;
-  record RahaxiBlock Rahaxib; 
-
+  
   res = true;
   switch (WindowState(wn)) begin
     case Rs_normal:
@@ -176,11 +175,9 @@ begin
     otherwise
       res = false;
   end;
-  
   if(res)then begin
   	res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
   end;
-  
   MyProdDClassDeleteRowTest = res;
   return;
 end;
@@ -193,20 +190,23 @@ begin
   row MyProdVc MyProdrw, MyProd2rw;
   
   wn = CurWindow();
-  if (WindowState(wn)!=Rs_insert) then
-  begin
+  if (WindowState(wn)!=Rs_insert) then begin
     rownr = WindowActiveRow(wn);
     GetWindowRecord(wn,MyProdr);
     DeselectWindow(wn,false);
     MatRowGet(MyProdr,rownr,MyProdrw);
-    if NonBlank(MyProdrw.InQty) then begin
-      for (i=0;i<rownr-1;i=i+1) begin
-        MatRowGet(MyProdr,i,MyProd2rw);
-        if (MyProd2rw.Item==MyProdrw.Item) then begin
-          MyProdrw.SerialNr = MyProd2rw.SerialNr;
+    if (NonBlank(MyProdrw.InQty) or NonBlank(MyProdrw.OutQty)) then begin
+      if NonBlank(MyProdrw.InQty) then begin
+        for (i=0;i<rownr-1;i=i+1) begin
+          MatRowGet(MyProdr,i,MyProd2rw);
+          if (MyProd2rw.Item==MyProdrw.Item) then begin
+            MyProdrw.SerialNr = MyProd2rw.SerialNr;
+          end;
         end;
-      end;
-      if Blank(MyProdrw.SerialNr) then begin
+        if Blank(MyProdrw.SerialNr) then begin
+          MessageBox(0, "Этот товар не был изготовлен в данном производстве");
+        end;
+      end else begin
         for(i=0;i<rownr;i=i+1) begin
           matrowget(MyProdr,i,MyProd2rw);
           if(MyProd2rw.stp==2)then begin
@@ -214,16 +214,11 @@ begin
           end;
         end;
       end;
+      MatRowPut(MyProdr,rownr,MyProdrw);
+      PutWindowRecord(wn,MyProdr);
     end else begin
-      for(i=0;i<rownr;i=i+1) begin
-        matrowget(MyProdr,i,MyProd2rw);
-        if(MyProd2rw.stp==2)then begin
-          MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
-        end;
-      end;
+      MessageBox(0, "Заполните поле 'Затр.' или 'Выпуск'");
     end;
-    MatRowPut(MyProdr,rownr,MyProdrw);
-    PutWindowRecord(wn,MyProdr);
   end else begin
     MessageBox(0, "Сохраните запись");
   end;
@@ -234,12 +229,12 @@ end;
 global
 updating procedure AddProdOperRowDsm()
 begin
-  Integer wn,nwn;
-  Integer rownr,err,mtrw,opermin,opermax,operminrow,opermaxrow,insertrowno,insertrowcnt;
+  Integer wn,rownr,mtrw,opermax,insertrowno,insertrowcnt,i;
   record MyProdVc MyProdr;
-	row MyProdVc MyProdrw;
-	integer i;
+	row MyProdVc MyProdrw,MyProd2rw;
+	Boolean testf;
 	
+	testf = false;
   wn = CurWindow;
 	rownr = WindowActiveRow(wn);
 	//DeselectWindow(wn,false);
@@ -247,9 +242,15 @@ begin
 	mtrw = matrowcnt(MyProdr);
 	if(rownr==-1 or rownr>=mtrw-1)then begin
 		insertrowcnt = mtrw - 1;
-		if (rownr==-1) then begin
+		if ((rownr==-1) or (mtrw<=1)) then begin
 		  insertrowcnt = mtrw;
 		end;
+    if (insertrowcnt!=0) then begin
+      MatRowGet(MyProdr,insertrowcnt-1,MyProd2rw);
+      if ((MyProd2rw.stp==1) and Blank(MyProd2rw.Item)) then begin
+        insertrowcnt = insertrowcnt - 1;
+      end;
+    end;
 		opermax = 0;
 		For(i=0;i<mtrw;i=i+1) begin
 			matrowget(MyProdr,i,MyProdrw);
@@ -301,3 +302,68 @@ begin
 end;
 
 
+global
+updating procedure DeleteProdOperRowDsm()
+begin
+  record MyProdVc MyProdr;
+  record ProdOperationVc ProdOpr;
+  Boolean testf,foundf;
+  row MyProdVc MyProdrw,MyProd2rw;
+  Integer wn,rownr,i,mtrw,pos;
+	string 200 prodstr;
+	string 20 tstr;
+  
+  testf = true;
+  foundf = false;
+  pos = 0;
+  wn = CurWindow;
+	rownr = WindowActiveRow(wn);
+	GetWindowRecord(wn,MyProdr);
+  MatRowGet(MyProdr,rownr,MyProdrw);
+  if (MyProdrw.stp==2) then begin
+    ProdOpr.MyProdNr = MyProdr.SerNr;
+    ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
+    if (ReadFirstKey("MyProdNr",ProdOpr,2,true)==false) then begin
+      mtrw = matrowcnt(MyProdr);
+      for (i=rownr;i<mtrw;i=i+1) begin
+        MatRowGet(MyProdr,i,MyProd2rw);
+        if (MyProd2rw.stp==2) then begin
+          prodstr = MyProd2rw.MotherOperations;
+          if nonblank(prodstr) then begin
+            ExtractObj(prodstr,pos,tstr);
+            while (nonblank(tstr)) begin
+              if (MyProdrw.OperationNo==stringtoint(tstr)) then begin
+                foundf = true;
+              end;
+              ExtractObj(prodstr,pos,tstr);
+            end;
+          end;
+        end;
+      end;
+      if (foundf==false) then begin
+        MatRowDelete(MyProdr,rownr);
+        while (testf) begin
+          mtrw = MatRowCnt(MyProdr);
+          if (rownr<mtrw) then begin
+            MatRowGet(MyProdr,rownr,MyProd2rw);
+            if (MyProd2rw.stp!=2) then begin
+              MatRowDelete(MyProdr,rownr);
+              testf = true;
+            end else begin
+              testf = false;
+            end;
+          end else begin
+            testf = false;
+          end;
+        end;
+        putwindowrecord(wn,MyProdr);
+      end else begin
+        MessageBox(0,"Операция является исходной для других операций");
+      end;
+    end else begin
+      MessageBox(0,"Операция уже сохранена");
+    end;
+  end else begin
+    MessageBox(0,"Выберите строку с операцией");
+  end;
+end;

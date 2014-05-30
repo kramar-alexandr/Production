@@ -2112,7 +2112,7 @@ begin
   //end;
   //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
   SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
-  SpecialMenu("Разложить по операциям",'G',2,"GenerateOperationSsm");
+  SpecialMenu("Разложить по операциям",'O',2,"GenerateOperationSsm");
   EndWindow;
 end;
 
