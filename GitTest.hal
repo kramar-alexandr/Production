@@ -20,7 +20,11 @@ begin
     // Edit ************************** Friday, 30 May 2014 17:23:56
     // Edit ************************** Friday, 30 May 2014 17:23:56
     
+<<<<<<< HEAD
 	r2eturn;
+=======
+	r1eturn;
+>>>>>>> fea19f04bc9449d656e39d30d69c96ad0a76d2ec
 end;
 
 
