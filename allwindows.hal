@@ -2112,15 +2112,9 @@ begin
   //end;
   //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
   SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
-<<<<<<< HEAD
   SpecialMenu("Разложить по операциям",'O',2,"GenerateOperationSsm");
-=======
-<<<<<<< HEAD
   SpecialMenu("Удалить операцию",'D',2,"DeleteProdOperRowDsm");
-=======
->>>>>>> FETCH_HEAD
-  SpecialMenu("Разложить по операциям",'G',2,"GenerateOperationSsm");
->>>>>>> cbd638c79639a306d5f11fdbc933875804500b41
+
   EndWindow;
 end;
 
@@ -2432,11 +2426,8 @@ window ProdOperationDClass:1
   wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,h2,h3,v,vm,vs;
-<<<<<<< HEAD
-  WindowBegin("Операции производства",ProdOperationDClass,CGview,-);
-=======
+
   WindowBegin("Операция производства",ProdOperationDClass,CGview,-);
->>>>>>> FETCH_HEAD
   SetWRect(20,80,600,340);
   Sizeable(-1,-1,0,0);
   UseView(ProdOperationVc);
@@ -2456,11 +2447,7 @@ begin
   EditField(h,v+=vs,50,"Послед-ность",ViewOnly,Sequence,false,0);
   EditField(h+70,v,30,"",ViewOnly,SubSequence,false,0);
   EditField(h+260,v,50,"№ сложного прoиз.",ViewOnly,MyProdNr,false,0);
-<<<<<<< HEAD
-  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MySequence,false,0);
-=======
   EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MyProdOperRow,false,0);
->>>>>>> FETCH_HEAD
 //  CheckBox(h2,v,0,"Time per Batch",BatchTime); no code
   ButtonFrame(h3,v=40,150,5,"Статус");
   RadioButton(h3,v,kPRStatusCreated,0,"Создано",PRStatusFlag);

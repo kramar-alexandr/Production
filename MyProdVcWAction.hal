@@ -302,10 +302,6 @@ begin
 end;
 
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> cbd638c79639a306d5f11fdbc933875804500b41
 global
 updating procedure DeleteProdOperRowDsm()
 begin
@@ -326,11 +322,7 @@ begin
   MatRowGet(MyProdr,rownr,MyProdrw);
   if (MyProdrw.stp==2) then begin
     ProdOpr.MyProdNr = MyProdr.SerNr;
-<<<<<<< HEAD
     ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
-=======
-    ProdOpr.MySequence = MyProdrw.OperationNo;
->>>>>>> cbd638c79639a306d5f11fdbc933875804500b41
     if (ReadFirstKey("MyProdNr",ProdOpr,2,true)==false) then begin
       mtrw = matrowcnt(MyProdr);
       for (i=rownr;i<mtrw;i=i+1) begin
@@ -374,10 +366,6 @@ begin
   end else begin
     MessageBox(0,"Выберите строку с операцией");
   end;
-<<<<<<< HEAD
+
 end;
-=======
-end;
-=======
->>>>>>> FETCH_HEAD
->>>>>>> cbd638c79639a306d5f11fdbc933875804500b41
+
