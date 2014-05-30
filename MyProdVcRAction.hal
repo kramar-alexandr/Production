@@ -1,8 +1,8 @@
 global
-updating procedure GenerateOperationSsm()
+updating procedure GenerateOperationSsm() // функция разложения по операциям
 begin
 
-  Integer wn, rownr, i, operprodcnt, rwcnt, rwcnt2, storeUnit;
+  Integer wn, i, rwcnt, rwcnt2, storeUnit, curcomp;
   record MyProdVc MyProdr;
   record ProdOperationVc ProdOperationr;
   row MyProdVc MyProdrw, MyProd2rw;
@@ -10,6 +10,7 @@ begin
   string 255 errStr;
   
   storeUnit = 0;
+  curcomp = CurrentCompany;
   wn = CurWindow();
   GetWindowRecord(wn,MyProdr);
   rwcnt = matrowcnt(MyProdr);
@@ -34,7 +35,6 @@ begin
 	  		end;
 	  		rwcnt2 = rwcnt2 + 1;
 	  	end;
-  		//MessageBox(0,MyProdrw.stp);
   	case 2:
   		RecordNew(ProdOperationr);
   		ProdOperationr.MyProdNr = MyProdr.SerNr;
@@ -48,15 +48,15 @@ begin
 	  		ProdOperationr.Comment = MyProdrw.ProdComment;
 	  		if (RecordStore(ProdOperationr,true)) then begin
 	  			storeUnit = 1;
+	  			CreateRecordLink(ProdOperationr,curcomp,MyProdr,curcomp);
+	  			CreateRecordLink(MyProdr,curcomp,ProdOperationr,curcomp);
 	  			rwcnt2 = matrowcnt(ProdOperationr);
-	  			//MessageBox(0,ProdOperationr.SerNr & "No");
 	    	end;
   		end;
   	case 3:
   		if (NonBlank(MyProdrw.Comment) and storeUnit == 1) then begin
-  			/*ProdOperationr.Math2 = MyProdrw.Comment;
-  			MessageBox(0,ProdOperationr.Math2);
-  			RecordStore(ProdOperationr,true);*/
+  			AddToText(MyProdrw.Comment & Chr(32),ProdOperationr);
+  			RecordStore(ProdOperationr,true);
   		end;
   	end;
     
@@ -66,42 +66,6 @@ begin
   	errStr = "Проблема с товаром:" & Chr(13) & Chr(13) & errStr;
   	MessageBox(0,errStr);
   end;
-  
-  /*wn = CurWindow();
-  if (WindowState(wn)!=Rs_insert) then
-  begin
-    rownr = WindowActiveRow(wn);
-    GetWindowRecord(wn,MyProdr);
-    DeselectWindow(wn,false);
-    MatRowGet(MyProdr,rownr,MyProdrw);
-    if NonBlank(MyProdrw.InQty) then begin
-      for (i=0;i<rownr-1;i=i+1) begin
-        MatRowGet(MyProdr,i,MyProd2rw);
-        if (MyProd2rw.Item==MyProdrw.Item) then begin
-          MyProdrw.SerialNr = MyProd2rw.SerialNr;
-        end;
-      end;
-      if Blank(MyProdrw.SerialNr) then begin
-        for(i=0;i<rownr;i=i+1) begin
-          matrowget(MyProdr,i,MyProd2rw);
-          if(MyProd2rw.stp==2)then begin
-            MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
-          end;
-        end;
-      end;
-    end else begin
-      for(i=0;i<rownr;i=i+1) begin
-        matrowget(MyProdr,i,MyProd2rw);
-        if(MyProd2rw.stp==2)then begin
-          MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
-        end;
-      end;
-    end;
-    MatRowPut(MyProdr,rownr,MyProdrw);
-    PutWindowRecord(wn,MyProdr);
-  end else begin
-    MessageBox(0, "Сохраните запись");
-  end;*/
 
   return;
 end;
@@ -190,7 +154,7 @@ global
 updating function LongInt MyProdVcRecordSave(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
 BEGIN
   LongInt res;
-	
+
 	res = 0;
 	
   MyProdVcRecordSave = res;
@@ -202,7 +166,7 @@ global
 updating function LongInt MyProdVcRecordSaveAfter(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
 BEGIN
   LongInt res;
-	
+
 	res = 0;
   
   MyProdVcRecordSaveAfter = res;
@@ -226,7 +190,7 @@ BEGIN
   LongInt res;
   val LocOKNr;
   Boolean ihef;
-	
+
 	res = 0;
   
   MyProdVcRecordUpdateAfter = res;
