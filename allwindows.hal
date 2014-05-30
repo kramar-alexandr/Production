@@ -2033,6 +2033,8 @@ begin
   MatText(t=2,34,"Операция пр. №",false);//Prod Operation **********
   //MatCol(t,140,"",0,OperationNo,false,0);
   MatColTL(t,130,"",0,M4Int,ViewOnly,0,OperationNo,false,0);
+  MatText(t=3,34,"Инструкции:",false);//Operation **********       Comment
+  MatCol(t,120,"",0,Comment,false,0);
   Flip(1);
   MatCol(t=1,-375,"Сер.№",0,SerialNr,false,SerialNrSClass);
   MatCol(t,-310,"Расход",0,InQty,true,MATVARINSClass);//Edit***************************Sasha2,17:52 29.05.2014
@@ -2045,8 +2047,6 @@ begin
   MatColTL(t,280,"",0,M4Str,Normal,0,MotherOperations,false,0);
   MatText(t=2,330,"Комм.",false);
   MatColTL(t,370,"",0,M4Str,Normal,0,Comment,false,0);
-  MatText(t=3,34,"Инструкции:",false);//Operation **********       Comment
-  MatCol(t,120,"",0,Comment,false,0);
   Flip(2);
   MatCol(t=1,-375,"Объекты",0,Objects,false,ObjSClass);
   MatCol(t,-310,"Расход",0,InQty,true,0);
@@ -2112,7 +2112,10 @@ begin
   //end;
   //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
   SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
+<<<<<<< HEAD
   SpecialMenu("Удалить операцию",'D',2,"DeleteProdOperRowDsm");
+=======
+>>>>>>> FETCH_HEAD
   SpecialMenu("Разложить по операциям",'G',2,"GenerateOperationSsm");
   EndWindow;
 end;
@@ -2425,7 +2428,11 @@ window ProdOperationDClass:1
   wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,h2,h3,v,vm,vs;
+<<<<<<< HEAD
   WindowBegin("Операции производства",ProdOperationDClass,CGview,-);
+=======
+  WindowBegin("Операция производства",ProdOperationDClass,CGview,-);
+>>>>>>> FETCH_HEAD
   SetWRect(20,80,600,340);
   Sizeable(-1,-1,0,0);
   UseView(ProdOperationVc);
@@ -2445,7 +2452,11 @@ begin
   EditField(h,v+=vs,50,"Послед-ность",ViewOnly,Sequence,false,0);
   EditField(h+70,v,30,"",ViewOnly,SubSequence,false,0);
   EditField(h+260,v,50,"№ сложного прoиз.",ViewOnly,MyProdNr,false,0);
+<<<<<<< HEAD
   EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MySequence,false,0);
+=======
+  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MyProdOperRow,false,0);
+>>>>>>> FETCH_HEAD
 //  CheckBox(h2,v,0,"Time per Batch",BatchTime); no code
   ButtonFrame(h3,v=40,150,5,"Статус");
   RadioButton(h3,v,kPRStatusCreated,0,"Создано",PRStatusFlag);

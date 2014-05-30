@@ -302,6 +302,7 @@ begin
 end;
 
 
+<<<<<<< HEAD
 global
 updating procedure DeleteProdOperRowDsm()
 begin
@@ -367,3 +368,5 @@ begin
     MessageBox(0,"Выберите строку с операцией");
   end;
 end;
+=======
+>>>>>>> FETCH_HEAD
