@@ -1973,7 +1973,7 @@ window MyProdDClass:1
   wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,h2,h3,h4,v,vm,vs,t;
-  WindowBegin("Сложное производство7",MyProdDClass,CGview,-);
+  WindowBegin("Сложное производство",MyProdDClass,CGview,-);
   SetWRect(20,80,620,333);
   Sizeable(-1,-1,0,0);
   UseView(MyProdVc);
@@ -2029,16 +2029,16 @@ begin
   //MatOverStrike(ovst);
   Flip(0);
   MatCol(t=1,34,"Товар",0,Item,false,INSClass);
-  MatCol(t,110,"Коммент.",0,Comment,false,0);
+  MatCol(t,110,"Описание",0,Comment,false,0);
   MatText(t=2,34,"Операция пр. №",false);//Prod Operation **********
   //MatCol(t,140,"",0,OperationNo,false,0);
   MatColTL(t,130,"",0,M4Int,ViewOnly,0,OperationNo,false,0);
   Flip(1);
   MatCol(t=1,-375,"Сер.№",0,SerialNr,false,SerialNrSClass);
-  MatCol(t,-310,"Затр.",0,InQty,true,MATVARINSClass);
+  MatCol(t,-310,"Расход",0,InQty,true,MATVARINSClass);//Edit***************************Sasha2,17:52 29.05.2014
   MatCol(t,-260,"Выпуск",0,OutQty,true,MATVARINSClass);
   MatCol(t,-210,"% ст-ти",0,RelVal,true,0);
-  MatCol(t,-160," Ст-ть",0,ItemCost,true,0);
+  MatCol(t,-160,"Ст-ть",0,ItemCost,true,0);
   MatCol(t,-100,"Труд.",0,ExtraCost,true,0);
   MatCol(t,-40,"Коэфф.",0,Coefficient,false,0);
   MatText(t=2,150,"Исходные операции:",false);//Mother Operation **********
@@ -2049,7 +2049,7 @@ begin
   MatCol(t,120,"",0,Comment,false,0);
   Flip(2);
   MatCol(t=1,-375,"Объекты",0,Objects,false,ObjSClass);
-  MatCol(t,-310,"Затр.",0,InQty,true,0);
+  MatCol(t,-310,"Расход",0,InQty,true,0);
   MatCol(t,-260,"Выпуск",0,OutQty,true,0);
   MatCol(t,-210,"Действит.",0,ActualQty,true,0);
   MatCol(t,-160,"Материал",0,Material,false,MaterialSClass);
@@ -2058,7 +2058,7 @@ begin
   MatText(t,300,"Машина:",false);//Machine group **********
   MatCol(t,380,"",0,Machine,false,AT2UnitSClass);
   Flip(3);
-  MatCol(t=1,-270,"Затр.",0,InQty,true,0);
+  MatCol(t=1,-270,"Расход",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);
   MatCol(t,-170,"Сер.№",0,SerialNr,false,SerialNrSClass);
   MatCol(t,-80,"Годен до",0,BestBefore,false,PasteCurDate);
@@ -2112,6 +2112,8 @@ begin
   //end;
   //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
   SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
+  SpecialMenu("Удалить операцию",'D',2,"DeleteProdOperRowDsm");
+  SpecialMenu("Разложить по операциям",'G',2,"GenerateOperationSsm");
   EndWindow;
 end;
 
@@ -2416,5 +2418,110 @@ LMasterWClass7_SpecMenu:;
   end;
   SpecialMenu("Открыть фильтр импорта чата",' ',16,"OpenChatFilterWsm");  
 
+  EndWindow;
+end;
+
+window ProdOperationDClass:1
+  wtag("language","RUS"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,v,vm,vs;
+  WindowBegin("Операции производства",ProdOperationDClass,CGview,-);
+  SetWRect(20,80,600,340);
+  Sizeable(-1,-1,0,0);
+  UseView(ProdOperationVc);
+  h = 120; h2 = 350; h3 = 500; vs = 20;
+  Tile(0,150,false,"",SerNr);
+  v = 6;
+  EditField(h,v,80,"№",St_i,SerNr,false,TSerSClass);
+  EditField(h2,v,80,"Заказ на пр.",ViewOnly,ProdOrdNr,false,0);
+  EditField(h3,v,80,"№ прoиз.",ViewOnly,ProdNr,false,0);
+  EditField(h,v+=vs,80,"Кол-во",Normal,Qty,false,0);
+  EditField(h2,v,80,"Действ. кол.",Normal,ActualQty,false,0);
+//  EditField(h,v+=vs,80,"Planned Days",Normal,PlanDurDays,true,0);
+//  EditField(h2,v,80,"Planned Time",Normal,PlanDurTime,true,PasteCurTime);
+  EditField(h,v+=vs,80,"Дата начала",Normal,StartDate,false,PasteCurDate);
+  EditField(h2,v,80,"Дата завершения",Normal,ProdDate,false,PasteCurDate);
+  EditField(h,v+=vs,310,"Коммент.",Normal,Comment,false,0);
+  EditField(h,v+=vs,50,"Послед-ность",ViewOnly,Sequence,false,0);
+  EditField(h+70,v,30,"",ViewOnly,SubSequence,false,0);
+  EditField(h+260,v,50,"№ сложного прoиз.",ViewOnly,MyProdNr,false,0);
+  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MySequence,false,0);
+//  CheckBox(h2,v,0,"Time per Batch",BatchTime); no code
+  ButtonFrame(h3,v=40,150,5,"Статус");
+  RadioButton(h3,v,kPRStatusCreated,0,"Создано",PRStatusFlag);
+  RadioButton(h3,v+=16,kPRStatusCancelled,0,"Отменено",PRStatusFlag);
+  RadioButton(h3,v+=16,kPRStatusStarted,0,"Начато",PRStatusFlag);
+  RadioButton(h3,v+=16,kPRStatusFinished,0,"Завершено",PRStatusFlag);
+  RadioButton(h3,v+=16,kPRStatusFinishedandDiscarded,0,"Завершено и забраковано",PRStatusFlag);
+  TileButton(1,"Товары");
+  TileButton(2,"Время");
+  TileButton(3,"Комментарий");
+  TileButton(4,"Инструкции");
+  Tile(1,120,true,"1",Math);
+  v = 6;
+//  EditField(h,v,-40,"Instructions",Normal,Instr0,false,0);
+//  EditField(h,v+=vs,-40,"",Normal,Instr1,false,0);
+  //EditField(h,v+=vs,-40,"",Normal,Instr2,false,0);
+  vm = v;
+  EnterSkip(Math);
+  v=16;
+  MatrixBegin(4,v,-50,-10,-,300);
+  InsertRowTest;
+  DeleteRowTest;
+  Flip(0);
+  MatCol(1,34,"Товар",0,Item,false,INSClass);
+  MatCol(1,110,"Описание",0,Comment,false,0);
+  Flip(1);
+  MatCol(1,-315,"Сер. №",0,SerialNr,false,SerialNrSClass);
+  MatCol(1,-250,"Расход",0,InQty,true,MATVARINSClass);
+  MatCol(1,-200,"Выпуск",0,OutQty,true,MATVARINSClass);
+  MatCol(1,-150,"% ст-ти",0,RelVal,true,0);//Edit***************************Sasha2,17:53 29.05.2014
+  MatCol(1,-100,"Ст-ть",0,ItemCost,true,0);//Edit***************************Sasha2,17:54 29.05.2014
+  MatCol(1,-40,"Коэфф.",0,Coefficient,false,0);
+  Flip(2);
+  MatCol(1,-315,"Объекты",0,Objects,false,ObjSClass);
+  MatCol(1,-250,"Расход",0,InQty,true,0);
+  MatCol(1,-200,"Выпуск",0,OutQty,true,0);
+  MatCol(1,-150,"Материал",0,Material,false,0);
+  Flip(3);
+  MatCol(1,-315,"Отбраковано",0,Discarded,false,SetSClass);
+  MatCol(1,-250,"Расход",0,InQty,true,0);
+  MatCol(1,-200,"Выпуск",0,OutQty,true,0);
+  MatCol(1,-150,"Опис. причины",0,StandProblem,false,StandProblemsSClass);
+  Flip(4);
+  MatCol(1,-355,"FIFO",0,ItemCost,false,0);
+  MatCol(1,-270,"Ряд FIFO",0,FIFORowVal,true,0);
+  EndMatrix;
+  v=v+1;
+  VTab(-35,v,-16,v+vs,ToolFlip,1,"A");
+  v=v+vs;  VTab(-35,v,-16,v+vs,ToolFlip,2,"B");
+  v=v+vs;  VTab(-35,v,-16,v+vs,ToolFlip,3,"C");
+  v=v+vs;  VTab(-35,v,-16,v+vs,ToolFlip,4,"D");
+  Tile(2,70,false,"1",SetupTime);
+  EditField(h=100,v=6,60,"Время наладки",Normal,SetupTime,false,0);//PasteCurTime
+  EditField(h2=300,v,60,"Время ожидания",Normal,QueueTime,false,0);
+  EditField(h,v+=vs,60,"Время движения",Normal,MoveTime,false,0);
+  EditField(h2=300,v,60,"Время пробега",Normal,RunTime,false,0);
+  EditField(h,v+=vs,60,"Время запуска",Normal,StartTime,false,PasteCurTime);
+  EditField(h2,v,60,"Время завершения",Normal,EndTime,false,PasteCurTime);
+  Tile(3,120,true,"1",Location);
+  v = 6;
+  EditField(h,v,80,"Склад",Normal,Location,false,LocationSClass);
+  EditField(h2,v,80,"Прич. отбраковки",Normal,StandProblem,false,StandProblemsSClass);
+  EditField(h,v+=vs,50,"Язык",Normal,LangCode,true,LangSCLass);
+  EditField(h2,v,80,"Операция",ViewOnly,StdOperation,false,0);
+  EditField(h,v+=vs,50,"Группа машин",Normal,MachineGroup,false,MachineGroupsSClass);
+  EditField(h2,v,50,"Действ. машина",Normal,Machine,false,AT2UnitSClass);
+  EditField(h,v+=vs,50,"Группа отображ.",Normal,DisplayGroup,false,CalDispGroupSClass);
+  EditField(h2,v,50,"Действ. сотрудник",Normal,Person,false,UserSClass);
+  EditField(h,v+=vs,-40,"Комментарий",Normal,Comment,false,0);
+  Tile(4,370,false,"3",Math2);
+  StaticText(50,15,"Текст",true);
+  TextField(30,25,-21,-80,Math2,0);
+  SpecialMenu("Добавить трудозатраты",' ',1,"LabourProdOperationDsm");
+  SpecialMenu("Создать серийный номер для заказа Товаров",' ',1,"GenSerialNosProdOperDsm");
+  SpecialMenu("Открыть запись операции",'t',0,"OpenTRFromProdOperation");
+  SpecialMenu("Создать деятельность",'c',2,"CreateActFromProdOperation");
+  SpecialMenu("Контроль качества",'u',3,"QualConFromProdOperationDsm");
   EndWindow;
 end;
