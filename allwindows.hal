@@ -2029,16 +2029,16 @@ begin
   //MatOverStrike(ovst);
   Flip(0);
   MatCol(t=1,34,"Товар",0,Item,false,INSClass);
-  MatCol(t,110,"Коммент.",0,Comment,false,0);
+  MatCol(t,110,"Описание",0,Comment,false,0);
   MatText(t=2,34,"Операция пр. №",false);//Prod Operation **********
   //MatCol(t,140,"",0,OperationNo,false,0);
   MatColTL(t,130,"",0,M4Int,ViewOnly,0,OperationNo,false,0);
   Flip(1);
   MatCol(t=1,-375,"Сер.№",0,SerialNr,false,SerialNrSClass);
-  MatCol(t,-310,"Затр.",0,InQty,true,MATVARINSClass);
+  MatCol(t,-310,"Расход",0,InQty,true,MATVARINSClass);//Edit***************************Sasha2,17:52 29.05.2014
   MatCol(t,-260,"Выпуск",0,OutQty,true,MATVARINSClass);
   MatCol(t,-210,"% ст-ти",0,RelVal,true,0);
-  MatCol(t,-160," Ст-ть",0,ItemCost,true,0);
+  MatCol(t,-160,"Ст-ть",0,ItemCost,true,0);
   MatCol(t,-100,"Труд.",0,ExtraCost,true,0);
   MatCol(t,-40,"Коэфф.",0,Coefficient,false,0);
   MatText(t=2,150,"Исходные операции:",false);//Mother Operation **********
@@ -2049,7 +2049,7 @@ begin
   MatCol(t,120,"",0,Comment,false,0);
   Flip(2);
   MatCol(t=1,-375,"Объекты",0,Objects,false,ObjSClass);
-  MatCol(t,-310,"Затр.",0,InQty,true,0);
+  MatCol(t,-310,"Расход",0,InQty,true,0);
   MatCol(t,-260,"Выпуск",0,OutQty,true,0);
   MatCol(t,-210,"Действит.",0,ActualQty,true,0);
   MatCol(t,-160,"Материал",0,Material,false,MaterialSClass);
@@ -2058,7 +2058,7 @@ begin
   MatText(t,300,"Машина:",false);//Machine group **********
   MatCol(t,380,"",0,Machine,false,AT2UnitSClass);
   Flip(3);
-  MatCol(t=1,-270,"Затр.",0,InQty,true,0);
+  MatCol(t=1,-270,"Расход",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);
   MatCol(t,-170,"Сер.№",0,SerialNr,false,SerialNrSClass);
   MatCol(t,-80,"Годен до",0,BestBefore,false,PasteCurDate);
@@ -2112,6 +2112,7 @@ begin
   //end;
   //SpecialMenu("Добавить строку опер. произв.",'',8,"AddProdOperRowDsm");
   SpecialMenu("Сгенерировать сер. номер",'G',1,"GenSerialNrMyProd");
+  SpecialMenu("Разложить по операциям",'G',2,"GenerateOperationSsm");
   EndWindow;
 end;
 
@@ -2443,6 +2444,7 @@ begin
   EditField(h,v+=vs,50,"Послед-ность",ViewOnly,Sequence,false,0);
   EditField(h+70,v,30,"",ViewOnly,SubSequence,false,0);
   EditField(h+260,v,50,"№ сложного прoиз.",ViewOnly,MyProdNr,false,0);
+  EditField(h+260,v+=vs,50,"Операция №",ViewOnly,MySequence,false,0);
 //  CheckBox(h2,v,0,"Time per Batch",BatchTime); no code
   ButtonFrame(h3,v=40,150,5,"Статус");
   RadioButton(h3,v,kPRStatusCreated,0,"Создано",PRStatusFlag);
@@ -2467,13 +2469,13 @@ begin
   DeleteRowTest;
   Flip(0);
   MatCol(1,34,"Товар",0,Item,false,INSClass);
-  MatCol(1,110,"Описан.",0,Comment,false,0);
+  MatCol(1,110,"Описание",0,Comment,false,0);
   Flip(1);
-  MatCol(1,-315,"Серийный №",0,SerialNr,false,SerialNrSClass);
+  MatCol(1,-315,"Сер. №",0,SerialNr,false,SerialNrSClass);
   MatCol(1,-250,"Расход",0,InQty,true,MATVARINSClass);
   MatCol(1,-200,"Выпуск",0,OutQty,true,MATVARINSClass);
-  MatCol(1,-150,"Вып.",0,RelVal,true,0);
-  MatCol(1,-100,"Цена",0,ItemCost,true,0);
+  MatCol(1,-150,"% ст-ти",0,RelVal,true,0);//Edit***************************Sasha2,17:53 29.05.2014
+  MatCol(1,-100,"Ст-ть",0,ItemCost,true,0);//Edit***************************Sasha2,17:54 29.05.2014
   MatCol(1,-40,"Коэфф.",0,Coefficient,false,0);
   Flip(2);
   MatCol(1,-315,"Объекты",0,Objects,false,ObjSClass);
