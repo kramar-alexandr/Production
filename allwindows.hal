@@ -2519,7 +2519,7 @@ begin
   EditField(h,v+=vs,-40,"Комментарий",Normal,Comment,false,0);
   Tile(4,370,false,"3",Math2);
   StaticText(50,15,"Текст",true);
-  TextField(30,25,-21,-80,Math2,0);
+  TextField(30,25,-21,-20 /*-80*/,Math2,0);
   SpecialMenu("Добавить трудозатраты",' ',1,"LabourProdOperationDsm");
   SpecialMenu("Создать серийный номер для заказа Товаров",' ',1,"GenSerialNosProdOperDsm");
   SpecialMenu("Открыть запись операции",'t',0,"OpenTRFromProdOperation");
