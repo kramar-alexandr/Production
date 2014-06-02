@@ -16,7 +16,7 @@ begin
   RecordField(xReserved,M4Int,0,0);
   RecordField(ProdDate,M4Date,0,0);
   FieldIsTransDate(ProdDate);
-  RecordField(Qty,M4UVal,0,0);
+  RecordField(Qty,M4Int,0,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(Recepy,M4Code,20,RecVc);
   RecordField(RecName,M4Str,60,0);
@@ -104,6 +104,8 @@ begin
   ArrayField(Machine,M4Code,20,AT2UnitVc);// Edit ************************** Monday, 5 May 2014 15:10:26
   ArrayField(MachineGroup,M4Code,20,AT2Vc);// Edit ************************** Monday, 5 May 2014 15:10:26
   ArrayField(ProdComment,M4Str,200,0);// Edit ************************** Monday, 5 May 2014 15:10:26
+  ArrayField(OrderedIn,M4Int,0,0); //Edit***************************Sasha2,11:06 02.06.2014
+  ArrayField(OrderedOut,M4Int,0,0);//Edit***************************Sasha2,11:06 02.06.2014
   EndArray;
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
