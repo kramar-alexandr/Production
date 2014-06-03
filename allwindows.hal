@@ -2063,9 +2063,9 @@ begin
   MatCol(t,-170,"Сер.№",0,SerialNr,false,SerialNrSClass);
   MatCol(t,-80,"Годен до",0,BestBefore,false,PasteCurDate);
   MatText(t=2,170,"Заказано:",false);//Заказно операций **********             Operation //Edit***************************Sasha2,11:20 02.06.2014
-  MatColTL(t,230,"",0,M4Int,Normal,0,OrderedIn,false,0);
+  MatColTL(t,230,"",0,M4Int,Normal,0,Ordered1,false,0);
   MatText(t,260,"Завершено:",false);//Сделано операций **********//Edit***************************Sasha2,11:20 02.06.2014
-  MatColTL(t,330,"",0,M4Int,Normal,0,OrderedOut,false,0);
+  MatColTL(t,330,"",0,M4Int,Normal,0,Ordered2,false,0);
   Flip(4);
   MatCol(t=1,-270,"Затр.",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);

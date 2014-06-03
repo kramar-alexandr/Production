@@ -61,7 +61,7 @@ begin
 		  			end; 		  			
 		  		end; ResetLoop(ProdOperation2r);
 		  		
-	    		if ((prodQty - MyProdrw.OrderedIn) > 0 and recCnt == MyProdrw.OrderedIn) then begin
+	    		if ((prodQty - MyProdrw.Ordered1) > 0 and recCnt == MyProdrw.Ordered1) then begin
 	    			RecordNew(ProdOperationr);
 		    		ProdOperationr.MyProdNr = MyProdr.SerNr;
 		  			ProdOperationr.MyProdOperRow = MyProdrw.OperationNo;
@@ -73,7 +73,7 @@ begin
 			  			CreateRecordLink(MyProdr,curComp,ProdOperationr,curComp);
 			  			rwcnt2 = matrowcnt(ProdOperationr);
 			  			
-			  			MyProdrw.OrderedIn = MyProdrw.OrderedIn + 1;
+			  			MyProdrw.Ordered1 = MyProdrw.Ordered1 + 1;
 				    	MatRowPut(MyProdr,i,MyProdrw);
 				    	RecordStore( MyProdr, true);
 				    end;
