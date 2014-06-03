@@ -1,39 +1,75 @@
+SetLangMode(LangRussian,"RUS",0);
+
 global updating procedure InsertProdOperationRow(var record MyProdVc MyProdr,integer rownr)
 begin
+  boolean testf,foundf;
 	row MyProdVc MyProdrw;
-	integer i,mtrw;
-	integer prevprodnr;
-	
-	mtrw = matrowcnt(MyProdr);
+  record ProdOperationVc ProdOpr;
+	integer i,mtrw,prevprodnr;
 
-	for(i=0;i<rownr;i=i+1) begin
-		matrowget(MyProdr,i,MyProdrw);
-	  if(MyProdrw.stp==2)then begin
-	  	prevprodnr = MyProdrw.OperationNo;
-	  end;
-	end;
-prevprodnr = prevprodnr + 1;
-	clearrow(MyProdr,MyProdrw,2);
-	MyProdrw.OperationNo = prevprodnr;
-  matrowinsert(MyProdr,rownr,MyProdrw);
-  For(i=rownr+1;i<mtrw+1;i=i+1) begin
-	  matrowget(MyProdr,i,MyProdrw);
-	  if(MyProdrw.stp==2)then begin
-	    if (MyProdrw.OperationNo==prevprodnr) then begin
-        MyProdrw.OperationNo = MyProdrw.OperationNo + 1;
-        prevprodnr = prevprodnr + 1;
+  foundf = false;
+  testf = true;
+  mtrw = matrowcnt(MyProdr);
+  MatRowGet(MyProdr,rownr,MyProdrw);
+  if ((MyProdrw.stp==1) and NonBlank(MyProdrw.Item)) then begin
+    for (i=rownr;i>=0;i=i-1) begin
+      if ((testf) and (foundf==false)) then begin
+        MatRowGet(MyProdr,i,MyProdrw);
+        if (MyProdrw.stp==2) then begin
+          foundf = true;
+          ProdOpr.MyProdNr = MyProdr.SerNr;
+          ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
+          if ReadFirstKey("MyProdNr",ProdOpr,2,true) then begin 
+            MessageBox(0,"Вставьте после товаров записанной операции");
+            testf = false;
+          end;
+        end;
       end;
-	  end;
-	  matrowput(MyProdr,i,MyProdrw);
-	end; 
-	
+    end;
+  end;
+  for (i=rownr;i<mtrw;i=i+1) begin
+    if (testf) then begin
+      MatRowGet(MyProdr,i,MyProdrw);
+      if (MyProdrw.stp==2) then begin
+        ProdOpr.MyProdNr = MyProdr.SerNr;
+        ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
+        if ReadFirstKey("MyProdNr",ProdOpr,2,true) then begin 
+          MessageBox(0,"Вставка над записанной операцией запрещена");
+          testf = false;
+        end;
+      end;
+    end;
+  end;
+
+	if (testf) then begin
+    for(i=0;i<rownr;i=i+1) begin
+      matrowget(MyProdr,i,MyProdrw);
+      if(MyProdrw.stp==2)then begin
+        prevprodnr = MyProdrw.OperationNo;
+      end;
+    end;
+    prevprodnr = prevprodnr + 1;
+    clearrow(MyProdr,MyProdrw,2);
+    MyProdrw.OperationNo = prevprodnr;
+    matrowinsert(MyProdr,rownr,MyProdrw);
+    For(i=rownr+1;i<mtrw+1;i=i+1) begin
+      matrowget(MyProdr,i,MyProdrw);
+      if(MyProdrw.stp==2)then begin
+        if (MyProdrw.OperationNo==prevprodnr) then begin
+          MyProdrw.OperationNo = MyProdrw.OperationNo + 1;
+          prevprodnr = prevprodnr + 1;
+        end;
+      end;
+      matrowput(MyProdr,i,MyProdrw);
+    end; 
+	end;
 return;
 end;
 
 
 global function boolean TestNextProdOperationExists(record MyProdVc MyProdr,integer rownr)
 begin
- boolean res;
+  boolean res;
 	
 	res = true;
 	
