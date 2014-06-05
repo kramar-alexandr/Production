@@ -17,9 +17,7 @@ begin
         MatRowGet(MyProdr,i,MyProdrw);
         if (MyProdrw.stp==2) then begin
           foundf = true;
-          ProdOpr.MyProdNr = MyProdr.SerNr;
-          ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
-          if ReadFirstKey("MyProdNr",ProdOpr,2,true) then begin 
+          if (MyProdrw.Ordered1!=0) then begin 
             MessageBox(0,"Вставьте после товаров записанной операции");
             testf = false;
           end;
@@ -31,9 +29,7 @@ begin
     if (testf) then begin
       MatRowGet(MyProdr,i,MyProdrw);
       if (MyProdrw.stp==2) then begin
-        ProdOpr.MyProdNr = MyProdr.SerNr;
-        ProdOpr.MyProdOperRow = MyProdrw.OperationNo;
-        if ReadFirstKey("MyProdNr",ProdOpr,2,true) then begin 
+        if (MyProdrw.Ordered1!=0) then begin 
           MessageBox(0,"Вставка над записанной операцией запрещена");
           testf = false;
         end;
