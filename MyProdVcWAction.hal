@@ -55,7 +55,6 @@ function boolean MyProdDClassItemEFAfter(integer wn,integer rownr,integer change
 begin
   record MyProdVc MyProdr;
   record INVc INr;
-  record ProdOperationVc ProdOpr;
   row MyProdVc MyProdrw;	
   Integer i,rwcnt;
   Boolean res,foundf;
@@ -196,21 +195,44 @@ begin
   if(res)then begin
     foundf = false;
     MatRowGet(MyProdr,rownr,MyProdrw);
-    if ((MyProdrw.stp==1) and NonBlank(MyProdrw.Item)) then begin
-      for (i=rownr;i>=0;i=i-1) begin
-        if ((res) and (foundf==false)) then begin
-          MatRowGet(MyProdr,i,MyProdrw);
-          if (MyProdrw.stp==2) then begin
-            foundf = true;
-              if (MyProdrw.Ordered1!=0) then begin 
-              MessageBox(0,"Данная операция уже записана. Добавьте новую");
-              res = false;
+    switch (MyProdrw.stp) begin
+      case 1:
+        if NonBlank(MyProdrw.Item) then begin
+          for (i=rownr;i>=0;i=i-1) begin
+            if ((res) and (foundf==false)) then begin
+              MatRowGet(MyProdr,i,MyProdrw);
+              if (MyProdrw.stp==2) then begin
+                foundf = true;
+                if (MyProdrw.Ordered1!=0) then begin 
+                  MessageBox(0,"Данная операция уже записана. Добавьте новую");
+                  res = false;
+                end;
+              end;
             end;
           end;
         end;
-      end;
+      case 2:
+        if (MyProdrw.Ordered1!=0) then begin 
+          MessageBox(0,"Данная операция уже записана. Добавьте новую");
+          res = false;
+        end;
+      case 3:
+        for (i=rownr;i>=0;i=i-1) begin
+          if ((res) and (foundf==false)) then begin
+            MatRowGet(MyProdr,i,MyProdrw);
+            if (MyProdrw.stp==2) then begin
+              foundf = true;
+              if (MyProdrw.Ordered1!=0) then begin 
+                MessageBox(0,"Данная операция уже записана. Добавьте новую");
+                res = false;
+              end;
+            end;
+          end;
+        end;
+      otherwise
+        res = false;
     end;
-
+  
   	//res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
   end;
 
@@ -245,24 +267,40 @@ begin
   if (res) then begin
     GetWindowRecord(wn,MyProdr);
     MatRowGet(MyProdr,rownr,MyProdrw);
-    switch (MyProdrw.stp) begin
-      case 1:
-        foundf = false;
-        for (i=rownr;i>=0;i=i-1) begin
-          if ((res) and (foundf==false)) then begin
-            MatRowGet(MyProdr,i,MyProdrw);
-            if (MyProdrw.stp==2) then begin
-              foundf = true;
-              if (MyProdrw.Ordered1!=0) then begin 
-                MessageBox(0,"Невозможно удалить товар из сохраненной операции");
-                res = false;
+    if (NonBlank(MyProdrw.Item) or NonBlank(MyProdrw.OperationNo)) then begin
+      switch (MyProdrw.stp) begin
+        case 1:
+          foundf = false;
+          for (i=rownr;i>=0;i=i-1) begin
+            if ((res) and (foundf==false)) then begin
+              MatRowGet(MyProdr,i,MyProdrw);
+              if (MyProdrw.stp==2) then begin
+                foundf = true;
+                if (MyProdrw.Ordered1!=0) then begin 
+                  MessageBox(0,"Невозможно удалить товар из сохраненной операции");
+                  res = false;
+                end;
               end;
             end;
           end;
-        end;
-      case 2:
-        MessageBox(0,"Для удаления операции используйте специальное меню");
-        res = false;
+        case 2:
+          MessageBox(0,"Для удаления операции используйте специальное меню");
+          res = false;
+        case 3:
+          foundf = false;
+          for (i=rownr;i>=0;i=i-1) begin
+            if ((res) and (foundf==false)) then begin
+              MatRowGet(MyProdr,i,MyProdrw);
+              if (MyProdrw.stp==2) then begin
+                foundf = true;
+                if (MyProdrw.Ordered1!=0) then begin 
+                  MessageBox(0,"Невозможно удалить инструкцию из сохраненной операции");
+                  res = false;
+                end;
+              end;
+            end;
+          end;
+      end;
     end;
   	//res = TestNextProdOperationExists(MyProdr,rownr);// Edit ************************** Monday, 5 May 2014 16:19:07
   end;
@@ -287,7 +325,7 @@ begin
       if NonBlank(MyProdrw.InQty) then begin
         for (i=0;i<rownr-1;i=i+1) begin
           MatRowGet(MyProdr,i,MyProd2rw);
-          if (MyProd2rw.Item==MyProdrw.Item) then begin
+          if ((MyProd2rw.Item==MyProdrw.Item) and NonBlank(MyProd2rw.OutQty)) then begin
             MyProdrw.SerialNr = MyProd2rw.SerialNr;
           end;
         end;
@@ -370,6 +408,7 @@ begin
   record MyProdVc MyProdr;
 	row MyProdVc MyProdrw;
 	integer i;
+	boolean res,foundf;
 	
   wn = CurWindow;
 	rownr = WindowActiveRow(wn);
@@ -377,15 +416,48 @@ begin
 	GetWindowRecord(wn,MyProdr);
 	mtrw = matrowcnt(MyProdr);
 	if(rownr==-1 or rownr>=mtrw-1)then begin
-		insertrowcnt = mtrw;
-		clearrow(MyProdr,MyProdrw,3);
-		matrowinsert(MyProdr,insertrowcnt,MyProdrw);
+		insertrowcnt = mtrw - 1;
+		if ((rownr==-1) or (mtrw<=1)) then begin
+		  insertrowcnt = mtrw;
+		end;
+    if (insertrowcnt!=0) then begin
+      MatRowGet(MyProdr,insertrowcnt-1,MyProdrw);
+      if ((MyProdrw.stp==1) and Blank(MyProdrw.Item)) then begin
+        insertrowcnt = insertrowcnt - 1;
+      end;
+    end;
 	end else begin
-		clearrow(MyProdr,MyProdrw,3);
-		matrowinsert(MyProdr,rownr,MyProdrw);
+	  insertrowcnt = rownr;
 	end;
-	putwindowrecord(wn,MyProdr);
+  foundf = false;
+  res = true;
+  MatRowGet(MyProdr,insertrowcnt-1,MyProdrw);
+  if (MyProdrw.stp==2) then begin
+    if (MyProdrw.Ordered1!=0) then begin 
+      MessageBox(0,"Данная операция уже записана");
+      res = false;
+    end;
+  end;
+  if ((MyProdrw.stp==1) or (MyProdrw.stp==3) or (MyProdrw.stp==0)) then begin
+    for (i=insertrowcnt-1;i>=0;i=i-1) begin
+      if ((res) and (foundf==false)) then begin
+        MatRowGet(MyProdr,i,MyProdrw);
+        if (MyProdrw.stp==2) then begin
+          foundf = true;
+          if (MyProdrw.Ordered1!=0) then begin 
+            MessageBox(0,"Данная операция уже записана");
+            res = false;
+          end;
+        end;
+      end;
+    end;
+  end;
 
+  if (res) then begin
+    clearrow(MyProdr,MyProdrw,3);
+    matrowinsert(MyProdr,insertrowcnt,MyProdrw);
+    putwindowrecord(wn,MyProdr);
+  end;
   return;
 end;
 
@@ -394,7 +466,6 @@ global
 updating procedure DeleteProdOperRowDsm()
 begin
   record MyProdVc MyProdr;
-  record ProdOperationVc ProdOpr;
   Boolean testf,foundf;
   row MyProdVc MyProdrw,MyProd2rw;
   Integer wn,rownr,i,mtrw,pos;
