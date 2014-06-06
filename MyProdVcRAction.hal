@@ -1,4 +1,8 @@
-
+procedure dummy() //##ii
+begin //##ii
+  SetLangMode(LangRussian,"RUS",0); //##ii
+  return; //##ii
+end; //##ii
 
 global
 
@@ -22,6 +26,16 @@ begin
   	prodQty = 1;
   end else begin
   	prodQty = MyProdr.Qty;
+  end;	
+  
+  if (MyProdr.PRStatusFlag != 2) then begin
+  	MessageBox(0, "Статус производства не \"Начато\"");
+  	return;
+  end;
+  
+  if (WindowState(wn) != 0) then begin
+  	MessageBox(0,"Сохраните запись");
+  	return;
   end;
 
 	for (j=0;j<prodQty;j=j+1) begin
