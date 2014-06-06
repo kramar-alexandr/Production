@@ -237,20 +237,22 @@ BEGIN
   Record MyProdVc MyProdr; //Edit***************************Sasha2,16:01 06.06.2014
   row MyProdVc MyProdrw; //Edit***************************Sasha2,16:01 06.06.2014
   
-  MyProdr.SerNr = ProdOpr.MyProdNr; //Edit***************************Sasha2,16:01 06.06.2014 
-  if (ReadFirstMain(MyProdr,1,true)) then begin
-  	rwcnt = matrowcnt(MyProdr);
-  	for (i=0;i<rwcnt;i=i+1) begin
-  		MatRowGet(MyProdr,i,MyProdrw);
-  		if (MyProdrw.OperationNo == ProdOpr.MyProdOperRow) then begin
-  			MyProdrw.Ordered1 = MyProdrw.Ordered1 - 1;
-  			MatRowPut(MyProdr,i,MyProdrw);
-  			RecordStore(MyProdr, true);
-  			goto Lbreak;
-  		end;
-  	end;
-  	LBreak:;
-  end; //Edit***************************Sasha2,16:01 06.06.2014
+  if (NonBlank(ProdOpr.MyProdNr) and NonBlank(ProdOpr.MyProdOperRow)) then begin //Edit***************************Sasha2,16:01 06.06.2014 
+	  MyProdr.SerNr = ProdOpr.MyProdNr; 
+	  if (ReadFirstMain(MyProdr,1,true)) then begin
+	  	rwcnt = matrowcnt(MyProdr);
+	  	for (i=0;i<rwcnt;i=i+1) begin
+	  		MatRowGet(MyProdr,i,MyProdrw);
+	  		if (MyProdrw.OperationNo == ProdOpr.MyProdOperRow) then begin
+	  			MyProdrw.Ordered1 = MyProdrw.Ordered1 - 1;
+	  			MatRowPut(MyProdr,i,MyProdrw);
+	  			RecordStore(MyProdr, true);
+	  			goto Lbreak;
+	  		end;
+	  	end;
+	  	LBreak:;
+	  end; 
+  end;//Edit***************************Sasha2,16:01 06.06.2014
 
   ProdOperationVcRecordRemove = res;
   return;
