@@ -1981,7 +1981,7 @@ begin
   ActiveFieldOnNew("Recepy");
   Tile(0,175,false,"",SerNr);
   vs = 20; h = 70; h2 = 390; v = 10; h3 = 500; h4 = 220;
-  EditField(h,v,80,"Номер",St_i,SerNr,false,TSerSClass);
+  EditField(h,v,80,"Номер",Normal,SerNr,false,TSerSClass);
   EditField(h4,v,250,"Наим.",Normal,RecName,false,0);
   //EditField(h,v+=vs,80,"Структ.",Normal,Recepy,false,RecSClass);// Edit ************************** Thursday, 15 May 2014 13:56:37
   EditField(h4,v+=vs,80,"Дата нач.",Normal,StartDate,false,PasteCurDate);
