@@ -105,7 +105,7 @@ begin
 	  	end;
 	  
   	end;  
-  putwindowrecord(wn,MyProdr);
+  //putwindowrecord(wn,MyProdr);
   if (NonBlank(errStr)) then begin
   	errStr = "Проблема с товаром:" & Chr(13) & Chr(13) & errStr;
   	MessageBox(0,errStr);
@@ -176,6 +176,38 @@ begin
   IsAnyProdOperationNotFinished = res;
   return;
 end;
+
+global
+function LongInt MyProdVcRecordDefaults(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt long1,LongInt long2) //Edit***************************Sasha2,16:02 10.06.2014
+BEGIN
+  LongInt res;
+  Time blankt;
+  record UserVc USr;
+  record ProdSettingsBlock PSb;
+  
+  BlockLoad(PSb);
+  res = 0;
+  MyProdr.SerNr = -1;
+  MyProdr.StartDate = CurrentDate;
+  if (SingleUserMode) then begin
+    MyProdr.SerNr = NextSerNr("MyProdVc",MyProdr.ProdDate,-1,false,"");
+  end;
+  MyProdr.Qty = 1;
+  /*MyProdr.DoneFlag = 0;
+  MyProdr.PRStatusFlag = 0;
+  MyProdr.FinnishedFlag = 0;
+  GetCurUser(USr);  
+  MyProdr.Location = USr.Location;
+  MyProdr.StartTime = blankt;
+  MyProdr.EndTime = blankt;
+  MyProdr.BreakTime = blankt;
+  MyProdr.ProdOrder = -1;
+  MyProdr.OrderNr = -1;
+  MyProdr.TotalProdOrdQty = BlankVal;
+  MyProdr.RowsHoldActualQty = PSb.ProdRowsHoldActualQty;*/
+  MyProdVcRecordDefaults = res;
+  RETURN;
+END; //Edit***************************Sasha2,16:02 10.06.2014
 
 
 global

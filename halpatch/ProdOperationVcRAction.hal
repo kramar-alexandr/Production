@@ -247,13 +247,11 @@ BEGIN
 	  			MyProdrw.Ordered1 = MyProdrw.Ordered1 - 1;
 	  			MatRowPut(MyProdr,i,MyProdrw);
 	  			RecordStore(MyProdr, true);
-	  			goto Lbreak;
+	  			i = rwcnt + 1;
 	  		end;
 	  	end;
-	  	LBreak:;
 	  end; 
   end;//Edit***************************Sasha2,16:01 06.06.2014
-
   ProdOperationVcRecordRemove = res;
   return;
 end;
@@ -589,6 +587,31 @@ begin
   return;
 end;
 
+updating procedure ProdOperationUpdateMyProdOrdered2(record ProdOperationVc ProdOpr) //Edit***************************Sasha2,17:01 10.06.2014
+begin
+  record MyProdVc MyProdr;
+  row MyProdVc MyProdrw;
+  Integer i,rwcnt;
+  
+  if (NonBlank(ProdOpr.MyProdNr) and NonBlank(ProdOpr.MyProdOperRow)) then begin 
+	  MyProdr.SerNr = ProdOpr.MyProdNr; 
+	  if (ReadFirstMain(MyProdr,1,true)) then begin
+	  	rwcnt = matrowcnt(MyProdr);
+	  	for (i=0;i<rwcnt;i=i+1) begin
+	  		MatRowGet(MyProdr,i,MyProdrw);
+	  		if (MyProdrw.OperationNo == ProdOpr.MyProdOperRow) then begin
+	  			MyProdrw.Ordered2 = MyProdrw.Ordered2 + 1;
+	  			MatRowPut(MyProdr,i,MyProdrw);
+	  			RecordStore(MyProdr, true);
+	  			i = rwcnt + 1;
+	  		end;
+	  	end;
+	  end; 
+  end;
+  
+  return;
+end; //Edit***************************Sasha2,17:01 10.06.2014
+
 global
 updating function LongInt ProdOperationVcRecordSaveAfter(var record ProdOperationVc ProdOpr,record ProdOperationVc ProdOp2r,LongInt stat,LongInt long4)
 begin
@@ -600,6 +623,7 @@ begin
     ProdOperationUpdateSerialNr(ProdOpr,false);
     ProdOperationUpdateCostPrice(ProdOpr);
     ProdOperationUpdateItemHistory(ProdOpr);
+    ProdOperationUpdateMyProdOrdered2(ProdOpr); //Edit***************************Sasha2,17:04 10.06.2014
 
 //    ProdMakeSD(ProdOpr);
 //    UpdateProdOrdFinished(ProdOpr);
@@ -817,6 +841,7 @@ begin
     end;
     UpdateProdOperationOut(ProdOpr,true);
     ProdOperationUpdateSerialNr(ProdOpr,false);
+    ProdOperationUpdateMyProdOrdered2(ProdOpr); //Edit***************************Sasha2,17:04 10.06.2014
     if (ihef==false) then begin
       ProdOperationUpdateCostPrice(ProdOpr);
       ProdOperationUpdateItemHistory(ProdOpr);
@@ -1229,7 +1254,7 @@ BEGIN
     res = -1;
     goto LProdOperationVcRecordCheck;
   end;
-  Prodr.SerNr = ProdOpr.ProdNr;
+  Prodr.SerNr = ProdOpr.ProdNr; 
   if (ReadFirstMain(Prodr,1,true)) then begin
   end;
   if (check!=0) and (transf) then begin
@@ -1267,7 +1292,7 @@ BEGIN
 	  end;
     qty = ProdOpr.ActualQty; 
 	  qty = qty + ActualQtyProduced(ProdOpr.ProdNr,ProdOpr.Sequence,ProdOpr.SubSequence,ProdOpr.SerNr);
-	  if (qty>Prodr.Qty) then begin
+	  if (qty>Prodr.Qty and ProdOpr.ProdNr > 0) then begin //Edit***************************Sasha2,14:10 10.06.2014
 	    RecordCheckError(1733,"",-1,"ActualQty");      
 	    res = -1; 
 	    goto LProdOperationVcRecordCheck;
