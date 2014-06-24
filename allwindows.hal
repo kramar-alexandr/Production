@@ -2052,11 +2052,14 @@ begin
   MatCol(t,-310,"Расход",0,InQty,true,0);
   MatCol(t,-260,"Выпуск",0,OutQty,true,0);
   MatCol(t,-210,"Действит.",0,ActualQty,true,0);
-  MatCol(t,-160,"Материал",0,Material,false,MaterialSClass);
+  MatCol(t,-150,"Материал",0,Material,false,MaterialSClass);
+  MatCol(t,-70,"Склад",0,LocationItem,false,LocationSClass);//Edit***************************Vitalii 24.06.2014
   MatText(t=2,150,"Группа машин:",false);//Machine group **********             Operation
   MatCol(t,240,"",0,MachineGroup,false,MachineGroupsSClass);
   MatText(t,300,"Машина:",false);//Machine group **********
   MatCol(t,380,"",0,Machine,false,AT2UnitSClass);
+  MatText(t,450,"Склад:",false);//Edit***************************Vitalii 24.06.2014
+  MatCol(t,510,"",0,LocProdOper,false,LocationSClass);
   Flip(3);
   MatCol(t=1,-270,"Расход",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);

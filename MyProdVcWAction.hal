@@ -1,6 +1,36 @@
 remote updating procedure InsertProdOperationRow(var record MyProdVc,integer);
 remote function boolean TestNextProdOperationExists(record MyProdVc,integer);
 external inner procedure ExtractObj(string,var Integer,var string);
+external inner procedure INTransferVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure OffHireVc_SerialNrSClass(Integer,Integer,var Array string,var Integer);
+external inner procedure InternMovVc_SerialNrSClass(Integer,Integer,var Array string,var Integer);
+external inner procedure CollectionVc_SerialNrSClass(Integer,Integer);
+external inner procedure DispatchVc_SerialNrSClass(Integer,Integer);
+external inner procedure RentINVc_SerialNrSClass(Integer,Integer);
+external inner procedure RentResVc_SerialNrSClass(Integer,Integer);
+external inner procedure QualConVc_SerialNrSClass(Integer,Integer,var Array string,var Integer);
+external inner procedure RetVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure WSVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure COVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure StockTakeVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure StockMovVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure DropSHVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure SHVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure SDVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure SRVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure PUVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure ProdVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure ORVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure IVCashVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure BatchTextVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure IVVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure BPCVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure RetPUVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure ProdOperationVc_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure SerialNrRClass_SerialNrSClass(string,Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure SerialNoScanNPTSSClass_SerialNrSClass(Integer,Integer,Integer,var Array string,var Integer);
+external inner procedure FillSerialNr(string,string,var Array string,var Integer);
+external inner procedure FillSerialNr2(string,string,var Array string,var Integer);
 
 SetLangMode(LangRussian,"RUS",0);
 
@@ -525,4 +555,110 @@ begin
   end;
 
 end;
+
+global
+procedure MyProdVc_SerialNrSClass(Integer mwn,var Array string asernrstr,var Integer acnt)
+BEGIN
+  record MyProdVc MyProdr;
+  record SerBalVc SerBalr;
+  row MyProdVc MyProdrw,MyProd2rw;
+  Integer rn,rwcnt,i;
+  Boolean foundf;
+  string 10 location; 
+  
+  foundf = false;
+  acnt = 1;
+  GetWindowRecord(mwn,MyProdr);
+  rn = WindowActiveRow(mwn);
+  rwcnt = MatRowCnt(MyProdr);
+  MatRowGet(MyProdr,rn,MyProdrw);
+  if NonBlank(MyProdrw.Item) then begin
+    if NonBlank(MyProdrw.LocationItem) then begin
+      location = MyProdrw.LocationItem;
+    end;
+    if Blank(location) then begin
+      for (i=rn;i>=0;i=i-1) begin
+        MatRowGet(MyProdr,i,MyProd2rw);
+        if ((MyProd2rw.stp==2) and (foundf==false)) then begin
+          foundf = true;
+          if NonBlank(MyProd2rw.LocProdOper) then begin
+            location = MyProd2rw.LocProdOper;
+          end;
+        end;
+      end;
+    end;
+    if Blank(location) then begin
+      if NonBlank(MyProdr.Location) then begin
+        location = MyProdr.Location;
+      end;
+    end;
+    if NonBlank(location) then begin
+      FillSerialNr(MyProdrw.Item,location,asernrstr,acnt);
+      if (acnt<=1) then begin
+        MessageBox(0,"Даный товар отсутствует на указаном складе");
+      end;
+    end else begin
+      MessageBox(0,"Информация о складе отсутствует");
+    end;
+  end else begin
+    MessageBox(0,"Выберите товар");
+  end;
+
+  RETURN;
+END;
+
+global
+function Boolean SerialNrSClassOnOpenWindow(Integer wn)
+begin
+  Integer mwn;
+  Array string 100 asernrstr;
+  Integer acnt,i;
+  
+  mwn = MotherWindow(wn);
+  switch (GetWindowFileName(mwn)) begin
+    case "MyProdVc": MyProdVc_SerialNrSClass(mwn,asernrstr,acnt);
+    case "BPCVc": BPCVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "BatchTextVc": BatchTextVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "IVVc": IVVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "IVCashVc": IVCashVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "ORVc": ORVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "ProdVc": ProdVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "PUVc": PUVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "RetVc": RetVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "SDVc": SDVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "SRVc": SRVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "SHVc": SHVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "DropSHVc": DropSHVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "StockMovVc": StockMovVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "StockTakeVc": StockTakeVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "WSVc": WSVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "COVc": COVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "OffHireVc": OffHireVc_SerialNrSClass(wn,mwn,asernrstr,acnt);
+    case "INTransferVc": INTransferVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "InternMovVc": InternMovVc_SerialNrSClass(wn,mwn,asernrstr,acnt);
+    case "CollectionVc": CollectionVc_SerialNrSClass(wn,mwn);
+    case "RentResVc": RentResVc_SerialNrSClass(wn,mwn);
+    case "QualConVc": QualConVc_SerialNrSClass(wn,mwn,asernrstr,acnt);
+    case "DispatchVc": DispatchVc_SerialNrSClass(wn,mwn);
+    case "RentINVc": RentINVc_SerialNrSClass(wn,mwn);
+    case "RetPUVc": RetPUVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "ProdOperationVc": ProdOperationVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    otherwise
+      switch (GetWindowClass(mwn)) begin
+        case "SerialNrRClass": SerialNrRClass_SerialNrSClass("",1,wn,mwn,asernrstr,acnt);
+        case "INPosRClass": SerialNrRClass_SerialNrSClass("",1,wn,mwn,asernrstr,acnt);
+        case "PULabRClass": SerialNrRClass_SerialNrSClass("f3",1,wn,mwn,asernrstr,acnt);
+        case "QualConRClass": SerialNrRClass_SerialNrSClass("",1,wn,mwn,asernrstr,acnt);
+        case "QualConResRClass": SerialNrRClass_SerialNrSClass("",1,wn,mwn,asernrstr,acnt);
+        case "SerialNoScanNPTSSClass": SerialNoScanNPTSSClass_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+        otherwise ;
+      end;  
+  end;
+  for (i=0;i<acnt;i=i+1) begin
+    SetListString(wn,len(asernrstr[i]),asernrstr[i],false);
+  end;      
+  SerialNrSClassOnOpenWindow = false;
+  return;
+end;
+
 

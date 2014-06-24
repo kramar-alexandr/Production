@@ -106,6 +106,8 @@ begin
   ArrayField(ProdComment,M4Str,200,0);// Edit ************************** Monday, 5 May 2014 15:10:26
   ArrayField(Ordered1,M4Int,0,0); //Edit***************************Sasha2,11:06 02.06.2014
   ArrayField(Ordered2,M4Int,0,0);//Edit***************************Sasha2,11:06 02.06.2014
+  ArrayField(LocProdOper,M4Code,10,LocationVc);//Edit***************************Vitalii 24.06.2014
+  ArrayField(LocationItem,M4Code,10,LocationVc);//Edit***************************Vitalii 24.06.2014
   EndArray;
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
