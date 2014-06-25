@@ -36,6 +36,9 @@ external function Boolean CheckAllowedSize(record INVc,val,val,val);
 external function Boolean Date2Test(string,Date,string,Integer);
 external function Boolean SerNrTestProdVc(LongInt,Date,var Boolean);
 external updating procedure ProdCalcItemCost(var record ProdVc,record ProdVc,Boolean);
+external procedure WarnFutureDate(Boolean,Date); //Edit***************************Sasha2,11:51 25.06.2014
+external procedure GetCurUser(var record UserVc); //Edit***************************Sasha2,11:53 25.06.2014
+
 
 procedure dummy() //##ii
 begin //##ii
@@ -1034,6 +1037,34 @@ LProdVcRecChk:;
   RETURN;
 END;//Edit***************************Sasha2,13:25 24.06.2014 }
 
+global
+function LongInt MyProdVcRecordRemoveTest(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt long3,LongInt long4)
+BEGIN
+  LongInt res;
+  record DBLockBlock DBLockRec;
+
+  res = 1;
+  BlockLoad(DBLockRec);
+  if (MyProdr.PRStatusFlag!=0) then begin
+    if (MyProdr.ProdDate>DBLockRec.DeleteBeforeDate) then begin
+      if (long3>0) then begin
+        MessageBox(1560,"");
+      end;
+      res = 0;
+      goto LProdVcRecordRemoveTest;
+    end;
+  end;
+  if (((MyProdr.PRStatusFlag>1) and (MyProdr.PRStatusFlag<4)) or (MyProdr.PRStatusFlag==5)) then begin
+    if (long3>0) then begin
+      MessageBox(1544,"");
+    end;
+    res = 0;
+  end; 
+LProdVcRecordRemoveTest:;
+  MyProdVcRecordRemoveTest = res; 
+  RETURN;
+END;
+
 
 global
 function LongInt MyProdVcRecordDefaults(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt long1,LongInt long2) //Edit***************************Sasha2,16:02 10.06.2014
@@ -1051,7 +1082,7 @@ BEGIN
     MyProdr.SerNr = NextSerNr("MyProdVc",MyProdr.ProdDate,-1,false,"");
   end;
   MyProdr.Qty = 1;
-  /*MyProdr.DoneFlag = 0;
+  MyProdr.DoneFlag = 0;
   MyProdr.PRStatusFlag = 0;
   MyProdr.FinnishedFlag = 0;
   GetCurUser(USr);  
@@ -1062,7 +1093,7 @@ BEGIN
   MyProdr.ProdOrder = -1;
   MyProdr.OrderNr = -1;
   MyProdr.TotalProdOrdQty = BlankVal;
-  MyProdr.RowsHoldActualQty = PSb.ProdRowsHoldActualQty;*/
+  MyProdr.RowsHoldActualQty = PSb.ProdRowsHoldActualQty;
   MyProdVcRecordDefaults = res;
   RETURN;
 END; //Edit***************************Sasha2,16:02 10.06.2014
@@ -1128,5 +1159,52 @@ BEGIN
 	res = 0;
   
   MyProdVcRecordUpdateAfter = res;
+  RETURN;
+END;
+
+global
+updating function LongInt MyProdVcRecordRemove(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+
+  //UpdateProdOut(Prodr,false,true);
+//  UpdateProdPlan(Prodr); ? 
+  MyProdVcRecordRemove = res;
+  RETURN;
+END;
+
+global
+function LongInt MyProdVcRecordDuplicate(var record MyProdVc MyProdr,record MyProdVc MyProd2r,LongInt long1,LongInt long2)
+BEGIN
+  LongInt res;
+  Time bt;
+  record ProdSettingsBlock PSb;
+  row MyProdVc MyProdrw;
+  Integer i,rwcnt;
+
+  BlockLoad(PSb);
+  res = 0;
+  MyProdr.SerNr = -1;
+  MyProdr.DoneFlag = 0;
+  MyProdr.PRStatusFlag = 0;
+  MyProdr.FinnishedFlag = 0;
+  MyProdr.LocOKNr = blankval;
+  MyProdr.ProdOrder = -1;
+  MyProdr.OrderNr = -1;
+  MyProdr.StartTime = bt;
+  MyProdr.EndTime = bt;
+  if (SingleUserMode) then begin
+    MyProdr.SerNr = NextSerNr("MyProdVc",MyProdr.ProdDate,-1,false,"");
+  end;  
+  MyProdr.RowsHoldActualQty = PSb.ProdRowsHoldActualQty;
+  rwcnt = MatRowCnt(MyProdr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(MyProdr,i,MyProdrw);
+    MyProdrw.OrgProdRow = -1;
+    MyProdrw.OrgProdFIFORowVal = blankval;
+    MatRowPut(MyProdr,i,MyProdrw);
+  end;
+  WarnFutureDate(true,MyProdr.ProdDate);
+  MyProdVcRecordDuplicate = res;      
   RETURN;
 END;
