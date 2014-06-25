@@ -2070,7 +2070,7 @@ begin
   MatText(t,260,"Завершено:",false);//Сделано операций **********//Edit***************************Sasha2,11:20 02.06.2014
   MatColTL(t,330,"",0,M4Int,ViewOnly,0,Ordered2,false,0);
   Flip(4);
-  MatCol(t=1,-270,"Затр.",0,InQty,true,0);
+  MatCol(t=1,-270,"Расход",0,InQty,true,0);
   MatCol(t,-220,"Выпуск",0,OutQty,true,0);
   MatCol(t,-170,"Вес",0,Weight,true,0);
   MatCol(t,-120,"Шир.",0,UnitXval,true,0);
