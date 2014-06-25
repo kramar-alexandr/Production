@@ -170,13 +170,37 @@ begin
     MatRowGet(MyProdr,rownr,MyProdrw);
     INr.Code=MyProdrw.Item;
     if (ReadFirstMain(INr,1,true)) then begin
-      if (INr.SerNrf!=0) then begin
+      if ((INr.SerNrf!=0) and NonBlank(MyProdrw.OutQty) and Blank(MyProdrw.SerialNr)) then begin
         MessageBox(0,"Введите серийный номер товара");
         res = false;     
       end;
     end;
   end;
   MyProdDClassOutQtyEFAfter = res;
+  return;
+end;
+
+function boolean MyProdDClassInQtyEFAfter(integer wn,integer rownr,integer changed)
+begin
+  record MyProdVc MyProdr;
+  record INVc INr;
+  row MyProdVc MyProdrw;	
+  Integer i;
+  Boolean res;
+
+  res = true;
+  if (changed!=0) then begin
+    GetWindowRecord(wn,MyProdr);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    INr.Code=MyProdrw.Item;
+    if (ReadFirstMain(INr,1,true)) then begin
+      if ((INr.SerNrf!=0) and NonBlank(MyProdrw.InQty) and Blank(MyProdrw.SerialNr)) then begin
+        MessageBox(0,"Введите серийный номер товара");
+        res = false;     
+      end;
+    end;
+  end;
+  MyProdDClassInQtyEFAfter = res;
   return;
 end;
 
@@ -191,7 +215,7 @@ BEGIN
     case "MotherOperations": res = MyProdDClassMotherOperationsEFAfter(wn,rownr,changed);
     case "Item":  res = MyProdDClassItemEFAfter(wn,rownr,changed);
     case "OutQty":  res = MyProdDClassOutQtyEFAfter(wn,rownr,changed);
-//    case "InQty":  res = MyProdDClassInOutQtyEFAfter(wn,rownr,changed);
+    case "InQty":  res = MyProdDClassInQtyEFAfter(wn,rownr,changed);
   end;
   MyProdDClassAfterEditField = res;
   RETURN;
@@ -357,6 +381,9 @@ begin
           MatRowGet(MyProdr,i,MyProd2rw);
           if ((MyProd2rw.Item==MyProdrw.Item) and NonBlank(MyProd2rw.OutQty)) then begin
             MyProdrw.SerialNr = MyProd2rw.SerialNr;
+            if NonBlank(MyProd2rw.LocationItem) then begin
+              MyProdrw.LocationItem = MyProd2rw.LocationItem;
+            end;
           end;
         end;
         if Blank(MyProdrw.SerialNr) then begin
@@ -367,6 +394,11 @@ begin
           matrowget(MyProdr,i,MyProd2rw);
           if(MyProd2rw.stp==2)then begin
             MyProdrw.SerialNr = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+            if NonBlank(MyProd2rw.LocProdOper) then begin
+              MyProdrw.LocationItem = MyProd2rw.LocProdOper;
+            end else begin
+              MyProdrw.LocationItem = MyProdr.Location;
+            end;
           end;
         end;
       end;
@@ -573,6 +605,32 @@ BEGIN
   rwcnt = MatRowCnt(MyProdr);
   MatRowGet(MyProdr,rn,MyProdrw);
   if NonBlank(MyProdrw.Item) then begin
+    if NonBlank(MyProdrw.InQty) then begin
+      for (i=0;i<rn-1;i=i+1) begin
+        MatRowGet(MyProdr,i,MyProd2rw);
+        if ((MyProd2rw.Item==MyProdrw.Item) and NonBlank(MyProd2rw.OutQty)) then begin
+          asernrstr[acnt] = MyProd2rw.SerialNr;
+        end;
+      end;
+      if NonBlank(asernrstr[acnt]) then begin
+        asernrstr[acnt] = asernrstr[acnt] & "                                  "
+                          & "Изготовлено в опер. № " & Right(asernrstr[acnt],1);
+        acnt = acnt + 1;
+      end;
+    end;
+    if NonBlank(MyProdrw.OutQty) then begin
+      for(i=0;i<rn;i=i+1) begin
+        matrowget(MyProdr,i,MyProd2rw);
+        if (MyProd2rw.stp==2) then begin
+          asernrstr[acnt] = MyProdr.SerNr & "-" & MyProd2rw.OperationNo;
+        end;
+      end;
+      if NonBlank(asernrstr[acnt]) then begin
+        asernrstr[acnt] = asernrstr[acnt] & "                                  "
+                          & "Сгенерированый сер. ном.";
+        acnt = acnt + 1;
+      end;
+    end;
     if NonBlank(MyProdrw.LocationItem) then begin
       location = MyProdrw.LocationItem;
     end;
@@ -593,9 +651,11 @@ BEGIN
       end;
     end;
     if NonBlank(location) then begin
-      FillSerialNr(MyProdrw.Item,location,asernrstr,acnt);
+      MyProdrw.LocationItem = location;
+      MatRowPut(MyProdr,rn,MyProdrw);
+      PutWindowRecord(mwn,MyProdr);
       if (acnt<=1) then begin
-        MessageBox(0,"Даный товар отсутствует на указаном складе");
+        FillSerialNr(MyProdrw.Item,location,asernrstr,acnt);
       end;
     end else begin
       MessageBox(0,"Информация о складе отсутствует");
@@ -616,7 +676,6 @@ begin
   
   mwn = MotherWindow(wn);
   switch (GetWindowFileName(mwn)) begin
-    case "MyProdVc": MyProdVc_SerialNrSClass(mwn,asernrstr,acnt);
     case "BPCVc": BPCVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
     case "BatchTextVc": BatchTextVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
     case "IVVc": IVVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
@@ -643,6 +702,7 @@ begin
     case "RentINVc": RentINVc_SerialNrSClass(wn,mwn);
     case "RetPUVc": RetPUVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
     case "ProdOperationVc": ProdOperationVc_SerialNrSClass(1,wn,mwn,asernrstr,acnt);
+    case "MyProdVc": MyProdVc_SerialNrSClass(mwn,asernrstr,acnt);
     otherwise
       switch (GetWindowClass(mwn)) begin
         case "SerialNrRClass": SerialNrRClass_SerialNrSClass("",1,wn,mwn,asernrstr,acnt);
@@ -660,5 +720,3 @@ begin
   SerialNrSClassOnOpenWindow = false;
   return;
 end;
-
-
