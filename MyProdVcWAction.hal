@@ -100,29 +100,27 @@ begin
       res = false;     
     end else begin
       rwcnt = MatRowCnt(MyProdr);
-      if (rownr==rwcnt-1) then begin
-        foundf = false;
-        MatRowGet(MyProdr,rownr,MyProdrw);
-        if (MyProdrw.stp==1) then begin
-          for (i=rownr;i>=0;i=i-1) begin
-            if ((res) and (foundf==false)) then begin
-              MatRowGet(MyProdr,i,MyProdrw);
-              if (MyProdrw.stp==2) then begin
-                foundf = true;
+      foundf = false;
+      MatRowGet(MyProdr,rownr,MyProdrw);
+      if (MyProdrw.stp==1) then begin
+        for (i=rownr;i>=0;i=i-1) begin
+          if ((res) and (foundf==false)) then begin
+            MatRowGet(MyProdr,i,MyProdrw);
+            if (MyProdrw.stp==2) then begin
+              foundf = true;
               if (MyProdrw.Ordered1!=0) then begin 
-                  MessageBox(0,"Данная операция уже записана. Добавьте новую");
+                MessageBox(0,"Данная операция уже записана. Добавьте новую");
+                MatRowGet(MyProdr,rownr,MyProdrw);
+                if Blank(MyProdrw.Comment) then begin
                   MatRowGet(MyProdr,rownr,MyProdrw);
-                  if Blank(MyProdrw.Comment) then begin
-                    MatRowGet(MyProdr,rownr,MyProdrw);
-                    MatRowDelete(MyProdr,rownr);
-                  end else begin
-                    INr.Name = MyProdrw.Comment;
-                    ReadFirstKey("Name",INr,1,true);
-                    MyProdrw.Item = INr.Code;
-                    MatRowPut(MyProdr,rownr,MyProdrw);
-                  end;
-                  res = false;
+                  MatRowDelete(MyProdr,rownr);
+                end else begin
+                  INr.Name = MyProdrw.Comment;
+                  ReadFirstKey("Name",INr,1,true);
+                  MyProdrw.Item = INr.Code;
+                  MatRowPut(MyProdr,rownr,MyProdrw);
                 end;
+                res = false;
               end;
             end;
           end;
@@ -133,6 +131,10 @@ begin
         INr.Code=MyProdrw.Item;
         if (ReadFirstMain(INr,1,true)) then begin
           MyProdrw.Comment = INr.Name;
+          MyProdrw.Weight = INr.Weight;
+          MyProdrw.UnitXval = INr.Width;
+          MyProdrw.UnitYval = INr.Height;
+          MyProdrw.UnitZval = INr.Depth;
           MatRowPut(MyProdr,rownr,MyProdrw);
           res = true;
         end else begin
@@ -144,6 +146,10 @@ begin
             INr.Name = MyProdrw.Comment;
             ReadFirstKey("Name",INr,1,true);
             MyProdrw.Item = INr.Code;
+            MyProdrw.Weight = INr.Weight;
+            MyProdrw.UnitXval = INr.Width;
+            MyProdrw.UnitYval = INr.Height;
+            MyProdrw.UnitZval = INr.Depth;
             MatRowPut(MyProdr,rownr,MyProdrw);
           end;
           res = false;     
@@ -204,6 +210,88 @@ begin
   return;
 end;
 
+function boolean MyProdDClassCommentEFAfter(integer wn,integer rownr,integer changed)
+begin
+  record MyProdVc MyProdr;
+  record INVc INr;
+  row MyProdVc MyProdrw;	
+  Integer i,rwcnt;
+  Boolean res,foundf;
+
+  res = true;
+  if (changed!=0) then begin
+    GetWindowRecord(wn,MyProdr);
+    MatRowGet(MyProdr,rownr,MyProdrw);
+    if (rownr==0) then begin
+      MessageBox(0,"Добавьте операцию");
+      MatRowGet(MyProdr,rownr,MyProdrw);
+      MatRowDelete(MyProdr,rownr);
+      res = false;     
+    end else begin
+      rwcnt = MatRowCnt(MyProdr);
+      foundf = false;
+      MatRowGet(MyProdr,rownr,MyProdrw);
+      if (MyProdrw.stp==1) then begin
+        for (i=rownr;i>=0;i=i-1) begin
+          if ((res) and (foundf==false)) then begin
+            MatRowGet(MyProdr,i,MyProdrw);
+            if (MyProdrw.stp==2) then begin
+              foundf = true;
+              if (MyProdrw.Ordered1!=0) then begin 
+                MessageBox(0,"Данная операция уже записана. Добавьте новую");
+                MatRowGet(MyProdr,rownr,MyProdrw);
+                if Blank(MyProdrw.Item) then begin
+                  MatRowGet(MyProdr,rownr,MyProdrw);
+                  MatRowDelete(MyProdr,rownr);
+                end else begin
+                  INr.Code=MyProdrw.Item;
+                  if (ReadFirstMain(INr,1,true)) then begin
+                    MyProdrw.Comment = INr.Name;
+                    MatRowPut(MyProdr,rownr,MyProdrw);
+                  end;
+                end;
+                res = false;
+              end;
+            end;
+          end;
+        end;
+      end;
+      if (res) then begin
+        MatRowGet(MyProdr,rownr,MyProdrw);
+        INr.Name = MyProdrw.Comment;
+        if (ReadFirstKey("Name",INr,1,true)) then begin
+          MyProdrw.Item = INr.Code;
+          MyProdrw.Weight = INr.Weight;
+          MyProdrw.UnitXval = INr.Width;
+          MyProdrw.UnitYval = INr.Height;
+          MyProdrw.UnitZval = INr.Depth;
+          MatRowPut(MyProdr,rownr,MyProdrw);
+          res = true;
+        end else begin
+          MessageBox(0,"Данный товар не зарегистрирован");
+          if Blank(MyProdrw.Item) then begin
+            MatRowGet(MyProdr,rownr,MyProdrw);
+            MatRowDelete(MyProdr,rownr);
+          end else begin
+            INr.Code=MyProdrw.Item;
+            ReadFirstMain(INr,1,true);
+            MyProdrw.Comment = INr.Name;
+            MyProdrw.Weight = INr.Weight;
+            MyProdrw.UnitXval = INr.Width;
+            MyProdrw.UnitYval = INr.Height;
+            MyProdrw.UnitZval = INr.Depth;
+            MatRowPut(MyProdr,rownr,MyProdrw);
+          end;
+          res = false;     
+        end;
+      end;
+    end;
+    PutWindowRecord(wn,MyProdr);
+  end;
+  MyProdDClassCommentEFAfter = res;
+  return;
+end;
+
 global
 function Boolean MyProdDClassAfterEditField(Integer wn,string fieldname,Integer fn,Integer rownr,Integer changed)
 BEGIN
@@ -216,6 +304,7 @@ BEGIN
     case "Item":  res = MyProdDClassItemEFAfter(wn,rownr,changed);
     case "OutQty":  res = MyProdDClassOutQtyEFAfter(wn,rownr,changed);
     case "InQty":  res = MyProdDClassInQtyEFAfter(wn,rownr,changed);
+    case "Comment":  res = MyProdDClassCommentEFAfter(wn,rownr,changed);
   end;
   MyProdDClassAfterEditField = res;
   RETURN;
